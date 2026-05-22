@@ -11,6 +11,8 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 - Option to set the display frame rate to 60Hz or 120Hz (for iPhones and iPads with ProMotion displays) to change it go to settings-> appearance-> refresh rate
 - Ability to delete and rename your backups
 - fixed migration so now read/unrad chapters are correctly perserved when migrating.
+- duplicate deletion. it can automatically finds duplicated mangas in library you can select which to delete.
+- swipe from right to left to mark a chapter read/unread
 
 # Contributing
 
