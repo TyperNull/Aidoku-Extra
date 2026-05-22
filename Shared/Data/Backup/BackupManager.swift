@@ -18,7 +18,10 @@ actor BackupManager {
     static let directory = FileManager.default.documentDirectory.appendingPathComponent("Backups", isDirectory: true)
 
     static var backupUrls: [URL] {
-        Self.directory.contentsByDateModified
+        Self.directory.contentsByDateModified.filter { url in
+            let ext = url.pathExtension.lowercased()
+            return ext == "aib" || ext == "json"
+        }
     }
 
     private static let backupTaskIdentifier = (Bundle.main.bundleIdentifier ?? "") + ".backup"
@@ -52,16 +55,15 @@ actor BackupManager {
         Self.directory.createDirectory()
         let encoder = PropertyListEncoder()
         encoder.outputFormat = .binary
-        if let plist = try? encoder.encode(backup) {
+        do {
+            let plist = try encoder.encode(backup)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
-            if let url = url {
-                try? plist.write(to: url)
-            } else {
-                let path = Self.directory.appendingPathComponent("aidoku_\(dateFormatter.string(from: backup.date)).aib")
-                try? plist.write(to: path)
-            }
+            let targetUrl = url ?? Self.directory.appendingPathComponent("aidoku_\(dateFormatter.string(from: backup.date)).aib")
+            try plist.write(to: targetUrl)
             NotificationCenter.default.post(name: Notification.Name("updateBackupList"), object: nil)
+        } catch {
+            LogManager.logger.error("Failed to save backup: \(error)")
         }
     }
 
@@ -88,6 +90,46 @@ actor BackupManager {
             NotificationCenter.default.post(name: Notification.Name("updateBackupList"), object: nil)
             return true
         } catch {
+            return false
+        }
+    }
+    
+    /// Import and convert a Tachiyomi backup file
+    func importTachiyomiBackup(from url: URL) async -> Bool {
+        let secured = url.startAccessingSecurityScopedResource()
+        defer {
+            if secured {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        
+        do {
+            // Read the Tachiyomi backup file
+            let data = try Data(contentsOf: url)
+            
+            // Decompress if needed (Tachiyomi backups are typically gzipped)
+            let decompressedData: Data
+            if data.starts(with: [0x1f, 0x8b]) { // gzip magic number
+                decompressedData = try data.gunzipped()
+            } else {
+                decompressedData = data
+            }
+            
+            // Convert to Aidoku format
+            let aidokuBackup = try TachiyomiConverter.convertToAidoku(from: decompressedData)
+            
+            // Save the converted backup
+            Self.directory.createDirectory()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+            let filename = "aidoku_tachiyomi_\(dateFormatter.string(from: aidokuBackup.date)).aib"
+            let targetLocation = Self.directory.appendingPathComponent(filename)
+            
+            save(backup: aidokuBackup, url: targetLocation)
+            
+            return true
+        } catch {
+            LogManager.logger.error("Failed to import Tachiyomi backup: \(error)")
             return false
         }
     }

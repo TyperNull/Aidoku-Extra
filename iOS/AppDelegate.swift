@@ -114,6 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 "General.icloudSync": false,
                 "General.appearance": 0,
                 "General.useSystemAppearance": true,
+                "General.refreshRate": "auto",
                 "Appearance.layout": "standard",
                 "Appearance.customPortraitRows": UIDevice.current.userInterfaceIdiom == .pad ? 5 : 2,
                 "Appearance.customLandscapeRows": UIDevice.current.userInterfaceIdiom == .pad ? 6 : 4,
@@ -564,6 +565,20 @@ extension AppDelegate {
                     presentAlert(
                         title: NSLocalizedString("IMPORT_FAIL", comment: ""),
                         message: NSLocalizedString("BACKUP_IMPORT_FAIL_TEXT", comment: "")
+                    )
+                }
+            }
+        } else if url.pathExtension == "tachibk" || url.pathExtension == "proto" {
+            Task {
+                if await BackupManager.shared.importTachiyomiBackup(from: url) {
+                    presentAlert(
+                        title: NSLocalizedString("BACKUP_IMPORT_SUCCESS", comment: ""),
+                        message: NSLocalizedString("TACHIYOMI_BACKUP_IMPORT_SUCCESS_TEXT", comment: "")
+                    )
+                } else {
+                    presentAlert(
+                        title: NSLocalizedString("IMPORT_FAIL", comment: ""),
+                        message: NSLocalizedString("TACHIYOMI_BACKUP_IMPORT_FAIL_TEXT", comment: "")
                     )
                 }
             }

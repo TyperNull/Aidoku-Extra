@@ -24,6 +24,21 @@ struct BackupTrackItem: Codable, Hashable {
         chapterOffset = Int(trackObject.chapterOffset)
     }
 
+    init(
+        trackerId: String,
+        id: String,
+        mangaId: String,
+        sourceId: String,
+        title: String?
+    ) {
+        self.id = id
+        self.trackerId = trackerId
+        self.mangaId = mangaId
+        self.sourceId = sourceId
+        self.title = title
+        self.chapterOffset = nil
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> TrackObject {
         let obj: TrackObject
         if let context = context {

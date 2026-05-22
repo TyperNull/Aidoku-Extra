@@ -20,6 +20,13 @@ struct BackupCategory {
         self.data = object.data as? Data
     }
 
+    init(title: String) {
+        self.title = title
+        self.sort = nil
+        self.group = nil
+        self.data = nil
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> CategoryObject {
         let obj: CategoryObject
         if let context = context {

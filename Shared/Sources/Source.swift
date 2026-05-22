@@ -55,7 +55,7 @@ struct FilterInfo: Codable {
     }
 }
 
-class Source: Identifiable {
+class Source: Identifiable, @unchecked Sendable {
 
     struct SourceManifest: Codable {
         let info: SourceInfo

@@ -77,6 +77,14 @@
 "SORT_BY" = "Sort By";
 "FILTER_BY" = "Filter By";
 "REMOVE_FILTER" = "Remove Filter";
+"FIND_DUPLICATES" = "Find Duplicates";
+"NO_DUPLICATES_FOUND" = "No Duplicates Found";
+"NO_DUPLICATES_FOUND_TEXT" = "Your library is clean! No duplicate manga were found.";
+"DELETE_%i_DUPLICATES?" = "Delete %i Duplicates?";
+"DELETE_DUPLICATES_TEXT" = "This will permanently remove the selected manga from your library.";
+"DUPLICATES_CHAPTER_COUNT_%i" = "%i chapters";
+"FEATURE_NOT_AVAILABLE" = "Feature Not Available";
+"DUPLICATES_REQUIRES_IOS_16" = "The Find Duplicates feature requires iOS 16.0 or later.";
 "TITLE" = "Title";
 "LAST_OPENED" = "Last Opened";
 "LAST_READ" = "Last Read";
@@ -440,6 +448,7 @@
 "APPEARANCE_LIGHT" = "Light";
 "APPEARANCE_DARK" = "Dark";
 "USE_SYSTEM_APPEARANCE" = "Use System Appearance";
+"REFRESH_RATE" = "Refresh Rate";
 "LAYOUT" = "Layout";
 "STANDARD" = "Standard";
 "COMPACT" = "Compact";
@@ -575,6 +584,8 @@
 "BACKUP_IMPORT_SUCCESS_TEXT" = "To restore to this backup, find it in the backups page in settings.";
 "IMPORT_FAIL" = "Import Failed";
 "BACKUP_IMPORT_FAIL_TEXT" = "Failed to save backup. Please ensure that your backup is in the proper format.";
+"TACHIYOMI_BACKUP_IMPORT_SUCCESS_TEXT" = "Tachiyomi backup converted successfully! To restore, find it in the backups page in settings. You may need to use the migration feature to link manga to sources.";
+"TACHIYOMI_BACKUP_IMPORT_FAIL_TEXT" = "Failed to convert Tachiyomi backup. Please ensure your .tachibk file is valid.";
 "SOURCE_IMPORT_FAIL_TEXT" = "Failed to import source. Please ensure that your aix file is valid.";
 "FILE_IMPORT_FAIL_TEXT" = "Failed to import file. Please ensure it is a valid CBZ or ZIP archive that contains images.";
 "BACKUP_%@" = "Backup %@";

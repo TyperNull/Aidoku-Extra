@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8111160DCDE24D27A9FD55DC /* LibraryDuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532932ADFD7B4F82B06DA0E6 /* LibraryDuplicatesView.swift */; };
+		7EE9AC6E47EF46A29E9F545E /* TachiyomiBackup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */; };
+		304C0E007B534D77ADF523E8 /* TachiyomiBackup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */; };
+		019E29E5C802466CB25C31DF /* TachiyomiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E761FBFCE2042DE936A736C /* TachiyomiConverter.swift */; };
+		5A3269D534B84F249AB14177 /* TachiyomiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E761FBFCE2042DE936A736C /* TachiyomiConverter.swift */; };
+		C194285894914C559C3B81D4 /* Data+Gzip.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9CF85A3135D481786842686 /* Data+Gzip.swift */; };
+		2DCC0F16C3F34B71814B3E3F /* Data+Gzip.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9CF85A3135D481786842686 /* Data+Gzip.swift */; };
 		002C0AC12EC0F44D0071CE82 /* LAPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002C0AC02EC0F44D0071CE82 /* LAPolicy.swift */; };
 		002C0AC22EC0F44D0071CE82 /* LAPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002C0AC02EC0F44D0071CE82 /* LAPolicy.swift */; };
 		04B48CF82CD6836100F719D0 /* ShikimoriTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B48CF72CD6835D00F719D0 /* ShikimoriTracker.swift */; };
@@ -601,6 +608,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		532932ADFD7B4F82B06DA0E6 /* LibraryDuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryDuplicatesView.swift; sourceTree = "<group>"; };
+		8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TachiyomiBackup.pb.swift; sourceTree = "<group>"; };
+		1E761FBFCE2042DE936A736C /* TachiyomiConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TachiyomiConverter.swift; sourceTree = "<group>"; };
+		E9CF85A3135D481786842686 /* Data+Gzip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Gzip.swift"; sourceTree = "<group>"; };
 		002C0AC02EC0F44D0071CE82 /* LAPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LAPolicy.swift; sourceTree = "<group>"; };
 		04B48CF72CD6835D00F719D0 /* ShikimoriTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShikimoriTracker.swift; sourceTree = "<group>"; };
 		04B48CFA2CD6838600F719D0 /* ShikimoriApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShikimoriApi.swift; sourceTree = "<group>"; };
@@ -1518,6 +1529,7 @@
 				FB4ADCA32814E5E700F6D7FB /* NSLocalizedString.swift */,
 				FB8E48E02DC15DCD002A3621 /* NotificationName.swift */,
 				002C0AC02EC0F44D0071CE82 /* LAPolicy.swift */,
+				E9CF85A3135D481786842686 /* Data+Gzip.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1923,6 +1935,7 @@
 			children = (
 				FB72501127CAAC860037F1C9 /* Models */,
 				FB72500E27CAAC6F0037F1C9 /* BackupManager.swift */,
+				904F05A271AA4B52AA2A3D77 /* TachiyomiConverter */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -2049,6 +2062,7 @@
 			children = (
 				FB90E8B32EAD175B00A8ACF3 /* DownloadQueueView.swift */,
 				FBF925B72F4F79740049CB43 /* LibraryCategorySelectionHeader.swift */,
+				532932ADFD7B4F82B06DA0E6 /* LibraryDuplicatesView.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -2333,6 +2347,15 @@
 			path = Downloads;
 			sourceTree = "<group>";
 		};
+		904F05A271AA4B52AA2A3D77 /* TachiyomiConverter */ = {
+			isa = PBXGroup;
+			children = (
+				8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */,
+				1E761FBFCE2042DE936A736C /* TachiyomiConverter.swift */,
+			);
+			path = TachiyomiConverter;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2434,7 +2457,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FB1B4829277CE18D0056D02C /* Build configuration list for PBXProject "Aidoku" */;
+			buildConfigurationList = FB1B4829277CE18D0056D02C /* Build configuration list for PBXProject "Aidoku (iOS)" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -2560,7 +2583,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
+FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FB8E48D52DBFCEFB002A3621 /* SourceHomeContentView.swift in Sources */,
 				FBF9259D2F4DFB810049CB43 /* MangaBakaModels.swift in Sources */,
 				FB55AFA328AAAEDF0083EFC3 /* ReaderPagedViewController.swift in Sources */,
@@ -2961,6 +2984,10 @@
 				FB79841D2E0DD183000761A9 /* TapZone.swift in Sources */,
 				FB58C6B22999B44D00A6F49F /* WebViewViewController.swift in Sources */,
 				FB72500F27CAAC6F0037F1C9 /* BackupManager.swift in Sources */,
+				7EE9AC6E47EF46A29E9F545E /* TachiyomiBackup.pb.swift in Sources */,
+				019E29E5C802466CB25C31DF /* TachiyomiConverter.swift in Sources */,
+				C194285894914C559C3B81D4 /* Data+Gzip.swift in Sources */,
+				8111160DCDE24D27A9FD55DC /* LibraryDuplicatesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3129,6 +3156,9 @@
 				FB72502027CAACC90037F1C9 /* BackupHistory.swift in Sources */,
 				FB619E402E94A62000E3B565 /* PageTracker.swift in Sources */,
 				FB82A5C32DF8622700366BC8 /* LocalModels.swift in Sources */,
+				304C0E007B534D77ADF523E8 /* TachiyomiBackup.pb.swift in Sources */,
+				5A3269D534B84F249AB14177 /* TachiyomiConverter.swift in Sources */,
+				2DCC0F16C3F34B71814B3E3F /* Data+Gzip.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3360,7 +3390,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3403,7 +3433,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3550,7 +3580,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FB1B4829277CE18D0056D02C /* Build configuration list for PBXProject "Aidoku" */ = {
+		FB1B4829277CE18D0056D02C /* Build configuration list for PBXProject "Aidoku (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FB1B4848277CE1920056D02C /* Debug */,

@@ -5,6 +5,7 @@
 //  Created by Skitty on 12/29/21.
 //
 
+import QuartzCore
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -35,6 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             self.window = window
             window.makeKeyAndVisible()
+            AppRefreshRateController.shared.register()
 
             let incognitoBannerView = IncognitoBannerView()
             self.incognitoBannerView = incognitoBannerView
@@ -70,9 +72,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         contentHideView.removeFromSuperview()
+        AppRefreshRateController.shared.apply()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+        AppRefreshRateController.shared.suspend()
+
         let incognitoEnabled = UserDefaults.standard.bool(forKey: "General.incognitoMode")
         if incognitoEnabled {
             (scene as? UIWindowScene)?.windows.first?.addSubview(contentHideView)
@@ -99,4 +104,119 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard newOrientation != previousInterfaceOrientation else { return }
         NotificationCenter.default.post(name: .orientationDidChange, object: newOrientation)
     }
+}
+
+enum AppRefreshRateMode: String, CaseIterable {
+    case automatic = "auto"
+    case sixtyHertz = "60"
+    case oneTwentyHertz = "120"
+
+    static let key = "General.refreshRate"
+
+    static var current: Self {
+        Self(rawValue: UserDefaults.standard.string(forKey: key) ?? "") ?? .automatic
+    }
+
+    static var isSupported: Bool {
+        !ProcessInfo.processInfo.isMacCatalystApp && UIScreen.main.maximumFramesPerSecond > 60
+    }
+
+    static var titles: [String] {
+        [
+            NSLocalizedString("AUTOMATIC"),
+            "60 Hz",
+            "120 Hz"
+        ]
+    }
+
+    func targetRefreshRate(maximumFramesPerSecond: Int) -> Int? {
+        switch self {
+            case .automatic:
+                nil
+            case .sixtyHertz:
+                min(60, maximumFramesPerSecond)
+            case .oneTwentyHertz:
+                min(120, maximumFramesPerSecond)
+        }
+    }
+}
+
+final class AppRefreshRateController: NSObject {
+    static let shared = AppRefreshRateController()
+
+    private var displayLink: CADisplayLink?
+    private var observers: [NSObjectProtocol] = []
+    private var isRegistered = false
+
+    func register() {
+        guard !isRegistered else { return }
+        isRegistered = true
+
+        let notificationCenter = NotificationCenter.default
+        observers.append(notificationCenter.addObserver(
+            forName: Notification.Name(AppRefreshRateMode.key),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.apply()
+        })
+        observers.append(notificationCenter.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.apply()
+        })
+        observers.append(notificationCenter.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.suspend()
+        })
+
+        apply()
+    }
+
+    func apply() {
+        guard
+            AppRefreshRateMode.isSupported,
+            UIApplication.shared.applicationState != .background,
+            let targetRefreshRate = AppRefreshRateMode.current.targetRefreshRate(
+                maximumFramesPerSecond: UIScreen.main.maximumFramesPerSecond
+            )
+        else {
+            suspend()
+            return
+        }
+
+        let displayLink = self.displayLink ?? CADisplayLink(
+            target: self,
+            selector: #selector(displayLinkDidUpdate(_:))
+        )
+        displayLink.preferredFrameRateRange = CAFrameRateRange(
+            minimum: Float(targetRefreshRate),
+            maximum: Float(targetRefreshRate),
+            preferred: Float(targetRefreshRate)
+        )
+
+        if self.displayLink == nil {
+            displayLink.add(to: .main, forMode: .common)
+            self.displayLink = displayLink
+        }
+        displayLink.isPaused = false
+    }
+
+    func suspend() {
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+
+    deinit {
+        for observer in observers {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
+    @objc private func displayLinkDidUpdate(_ displayLink: CADisplayLink) {}
 }

@@ -153,6 +153,9 @@ extension SettingsView {
                     UIApplication.shared.firstKeyWindow?.overrideUserInterfaceStyle = .unspecified
                 }
 
+            case AppRefreshRateMode.key:
+                AppRefreshRateController.shared.apply()
+
             case "Logs.logServer":
                 Task {
                     let url = UserDefaults.standard.string(forKey: "Logs.logServer").flatMap(URL.init)

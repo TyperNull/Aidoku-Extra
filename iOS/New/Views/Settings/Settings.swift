@@ -156,7 +156,22 @@ extension Settings {
                 title: NSLocalizedString("USE_SYSTEM_APPEARANCE"),
                 value: .toggle(.init())
             )
-        ]))),
+        ] + {
+            if AppRefreshRateMode.isSupported {
+                [
+                    .init(
+                        key: AppRefreshRateMode.key,
+                        title: NSLocalizedString("REFRESH_RATE"),
+                        value: .select(.init(
+                            values: AppRefreshRateMode.allCases.map(\.rawValue),
+                            titles: AppRefreshRateMode.titles
+                        ))
+                    )
+                ]
+            } else {
+                []
+            }
+        }()))),
         .init(
             title: NSLocalizedString("LAYOUT"),
             value: .group(.init(items: [

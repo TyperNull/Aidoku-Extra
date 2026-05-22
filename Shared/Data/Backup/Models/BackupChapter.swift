@@ -38,6 +38,33 @@ struct BackupChapter: Codable, Hashable {
         sourceOrder = Int(chapterObject.sourceOrder)
     }
 
+    init(
+        sourceId: String,
+        mangaId: String,
+        id: String,
+        title: String?,
+        scanlator: String?,
+        lang: String,
+        chapter: Double?,
+        volume: Float?,
+        dateUploaded: Date?,
+        sourceOrder: Int
+    ) {
+        self.sourceId = sourceId
+        self.mangaId = mangaId
+        self.id = id
+        self.title = title
+        self.scanlator = scanlator
+        self.url = nil
+        self.lang = lang
+        self.chapter = chapter.map { Float($0) }
+        self.volume = volume
+        self.dateUploaded = dateUploaded
+        self.thumbnail = nil
+        self.locked = nil
+        self.sourceOrder = sourceOrder
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> ChapterObject {
         let obj: ChapterObject
         if let context = context {

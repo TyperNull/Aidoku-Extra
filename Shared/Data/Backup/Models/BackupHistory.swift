@@ -26,6 +26,24 @@ struct BackupHistory: Codable, Hashable {
         completed = historyObject.completed
     }
 
+    init(
+        sourceId: String,
+        mangaId: String,
+        chapterId: String,
+        progress: Int32,
+        total: Int?,
+        completed: Bool,
+        dateRead: Date
+    ) {
+        self.dateRead = dateRead
+        self.sourceId = sourceId
+        self.chapterId = chapterId
+        self.mangaId = mangaId
+        self.progress = Int(progress)
+        self.total = total
+        self.completed = completed
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> HistoryObject {
         let obj: HistoryObject
         if let context = context {

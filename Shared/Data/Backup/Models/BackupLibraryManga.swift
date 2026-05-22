@@ -33,6 +33,26 @@ struct BackupLibraryManga: Codable, Hashable {
         }
     }
 
+    init(
+        sourceId: String,
+        mangaId: String,
+        lastOpened: Date? = nil,
+        lastUpdated: Date? = nil,
+        lastRead: Date? = nil,
+        dateAdded: Date,
+        categories: [String]? = nil
+    ) {
+        self.lastOpened = lastOpened ?? Date.distantPast
+        self.lastUpdated = lastUpdated ?? Date.distantPast
+        self.lastUpdatedChapters = nil
+        self.lastChapter = nil
+        self.lastRead = lastRead
+        self.dateAdded = dateAdded
+        self.mangaId = mangaId
+        self.sourceId = sourceId
+        self.categories = categories
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> LibraryMangaObject {
         let obj: LibraryMangaObject
         if let context = context {

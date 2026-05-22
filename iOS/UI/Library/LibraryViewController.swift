@@ -694,6 +694,28 @@ extension LibraryViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
+    @objc func openDuplicatesFinder() {
+        guard #available(iOS 16.0, *) else {
+            let alert = UIAlertController(
+                title: NSLocalizedString("FEATURE_NOT_AVAILABLE"),
+                message: NSLocalizedString("DUPLICATES_REQUIRES_IOS_16"),
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK"), style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        let path = NavigationCoordinator(rootViewController: self)
+        let viewController = UIHostingController(rootView: LibraryDuplicatesView().environmentObject(path))
+        if #available(iOS 17.0, *) {
+            viewController.navigationItem.largeTitleDisplayMode = .inline
+        } else {
+            viewController.navigationItem.largeTitleDisplayMode = .never
+        }
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
     @objc func removeSelectedFromLibrary() {
         let inCategory = viewModel.isInRealCategory
         let selectedItems = collectionView.indexPathsForSelectedItems ?? []
@@ -1085,6 +1107,14 @@ extension LibraryViewController {
             self.setEditing(true, animated: true)
         }
 
+        let findDuplicatesAction = UIAction(
+            title: NSLocalizedString("FIND_DUPLICATES"),
+            image: UIImage(systemName: "doc.on.doc")
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.openDuplicatesFinder()
+        }
+
         let layoutActions = [
             UIAction(
                 title: NSLocalizedString("LAYOUT_GRID"),
@@ -1208,9 +1238,14 @@ extension LibraryViewController {
             }
         }
 
+        var topMenuActions: [UIMenuElement] = [selectAction]
+        if #available(iOS 16.0, *) {
+            topMenuActions.append(findDuplicatesAction)
+        }
+
         moreBarButton.menu = UIMenu(
             children: [
-                UIMenu(options: .displayInline, children: [selectAction]),
+                UIMenu(options: .displayInline, children: topMenuActions),
                 UIMenu(options: .displayInline, children: layoutActions),
                 UIMenu(options: .displayInline, children: [sortMenu, filterMenu])
             ]

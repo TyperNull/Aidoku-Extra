@@ -807,18 +807,14 @@ extension MangaManager {
                                     context: context
                                 )
 
-                                var maxChapterRead = storedOldHistory
-                                    .compactMap { $0.chapter?.chapter != nil ? $0.chapter : nil }
-                                    .max { $0.chapter!.decimalValue < $1.chapter!.decimalValue }?
-                                    .chapter?.floatValue
-
-                                if maxChapterRead == nil || maxChapterRead == -1 {
-                                    // try finding max volume read instead, in case of no chapters
-                                    maxChapterRead = storedOldHistory
-                                        .compactMap { $0.chapter?.volume != nil ? $0.chapter : nil }
-                                        .max { $0.volume!.decimalValue < $1.volume!.decimalValue }?
-                                        .volume?.floatValue
-                                }
+                                // Get the set of actually read chapter numbers and volume numbers
+                                let readChapterNumbers = Set(storedOldHistory
+                                    .filter { $0.completed }
+                                    .compactMap { $0.chapter?.chapter?.floatValue })
+                                
+                                let readVolumeNumbers = Set(storedOldHistory
+                                    .filter { $0.completed }
+                                    .compactMap { $0.chapter?.volume?.floatValue })
 
                                 // remove old chapters and history
                                 if !copy {
@@ -843,13 +839,33 @@ extension MangaManager {
                                     )
                                 }
 
-                                // mark new chapters as read
-                                if let maxChapterRead {
-                                    var chaptersToMark = newChapters.filter({ $0.chapterNumber ?? Float.greatestFiniteMagnitude <= maxChapterRead })
-                                    if chaptersToMark.isEmpty {
-                                        // fall back to using volume numbers instead, in case the source we're migrating to uses volumes
-                                        chaptersToMark = newChapters.filter({ $0.volumeNumber ?? Float.greatestFiniteMagnitude <= maxChapterRead })
+                                // mark new chapters as read based on actually read chapters from old source
+                                if !readChapterNumbers.isEmpty {
+                                    // Match by chapter number
+                                    let chaptersToMark = newChapters.filter { chapter in
+                                        if let chapterNum = chapter.chapterNumber {
+                                            return readChapterNumbers.contains(chapterNum)
+                                        }
+                                        return false
                                     }
+                                    
+                                    if !chaptersToMark.isEmpty {
+                                        CoreDataManager.shared.setCompleted(
+                                            sourceId: newManga.sourceKey,
+                                            mangaId: newManga.key,
+                                            chapterIds: chaptersToMark.map { $0.key },
+                                            context: context
+                                        )
+                                    }
+                                } else if !readVolumeNumbers.isEmpty {
+                                    // Fall back to matching by volume number if no chapter numbers available
+                                    let chaptersToMark = newChapters.filter { chapter in
+                                        if let volumeNum = chapter.volumeNumber {
+                                            return readVolumeNumbers.contains(volumeNum)
+                                        }
+                                        return false
+                                    }
+                                    
                                     if !chaptersToMark.isEmpty {
                                         CoreDataManager.shared.setCompleted(
                                             sourceId: newManga.sourceKey,

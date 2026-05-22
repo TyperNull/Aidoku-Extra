@@ -64,16 +64,26 @@ struct BackupsView: View {
             DocumentPickerView(
                 allowedContentTypes: [
                     .init(filenameExtension: "aib")!,
-                    .json
+                    .json,
+                    .init(filenameExtension: "tachibk") ?? .data,
+                    .init(filenameExtension: "proto") ?? .data
                 ],
                 onDocumentsPicked: { urls in
                     guard let url = urls.first else {
                         return
                     }
                     Task {
-                        let result = await BackupManager.shared.importBackup(from: url)
-                        if !result {
-                            showImportFailAlert = true
+                        let ext = url.pathExtension.lowercased()
+                        if ext == "tachibk" || ext == "proto" {
+                            let result = await BackupManager.shared.importTachiyomiBackup(from: url)
+                            if !result {
+                                showImportFailAlert = true
+                            }
+                        } else {
+                            let result = await BackupManager.shared.importBackup(from: url)
+                            if !result {
+                                showImportFailAlert = true
+                            }
                         }
                     }
                 }
@@ -220,6 +230,18 @@ struct BackupsView: View {
                 targetExportBackup = backup
             } label: {
                 Label(NSLocalizedString("EXPORT"), systemImage: "square.and.arrow.up")
+            }
+            Button {
+                showRenamePrompt(targetRenameBackupUrl: url, initialName: backup.name)
+            } label: {
+                Label(NSLocalizedString("RENAME"), systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                if let index = backupUrls.firstIndex(of: url) {
+                    onDelete(at: IndexSet(integer: index))
+                }
+            } label: {
+                Label(NSLocalizedString("DELETE"), systemImage: "trash")
             }
         }
         .background(

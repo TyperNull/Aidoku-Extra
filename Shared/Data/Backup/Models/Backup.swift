@@ -27,14 +27,23 @@ struct Backup: Codable, Hashable, Identifiable, Sendable {
     var version: String?
 
     static func load(from url: URL) -> Backup? {
-        guard let json = try? Data(contentsOf: url) else { return nil }
+        guard let data = try? Data(contentsOf: url) else { return nil }
 
-        if let backup = try? PropertyListDecoder().decode(Backup.self, from: json) {
+        do {
+            let backup = try PropertyListDecoder().decode(Backup.self, from: data)
             return backup
-        } else {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            return try? decoder.decode(Backup.self, from: json)
+        } catch {
+            LogManager.logger.error("PropertyListDecoder failed for \(url.lastPathComponent): \(error)")
+            
+            do {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .secondsSince1970
+                let backup = try decoder.decode(Backup.self, from: data)
+                return backup
+            } catch {
+                LogManager.logger.error("JSONDecoder failed for \(url.lastPathComponent): \(error)")
+                return nil
+            }
         }
     }
 }

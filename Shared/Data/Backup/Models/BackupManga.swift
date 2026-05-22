@@ -48,6 +48,40 @@ struct BackupManga: Codable, Hashable {
         editedKeys = Int(mangaObject.editedKeys)
     }
 
+    init(
+        sourceId: String,
+        id: String,
+        title: String,
+        author: String?,
+        artist: String?,
+        desc: String?,
+        tags: [String]?,
+        cover: String?,
+        url: String?,
+        status: Int,
+        nsfw: Int,
+        viewer: Int
+    ) {
+        self.id = id
+        self.sourceId = sourceId
+        self.title = title
+        self.author = author
+        self.artist = artist
+        self.desc = desc
+        self.tags = tags
+        self.cover = cover
+        self.url = url
+        self.status = status
+        self.nsfw = nsfw
+        self.viewer = viewer
+        self.neverUpdate = nil
+        self.nextUpdateTime = nil
+        self.chapterFlags = nil
+        self.langFilter = nil
+        self.scanlatorFilter = nil
+        self.editedKeys = nil
+    }
+
     func toObject(context: NSManagedObjectContext? = nil) -> MangaObject {
         let obj: MangaObject
         if let context = context {

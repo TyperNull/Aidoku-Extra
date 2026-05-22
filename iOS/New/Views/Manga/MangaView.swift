@@ -367,6 +367,31 @@ extension MangaView {
         // use equatableview to determine when to refresh the view
         // improves the scrolling performance of the list
         .equatable()
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            if !locked && editMode == .inactive {
+                if viewModel.readingHistory[chapter.key]?.page == -1 {
+                    // Chapter is read, show unread action
+                    Button {
+                        Task {
+                            await viewModel.markUnread(chapters: [chapter])
+                        }
+                    } label: {
+                        Label(NSLocalizedString("MARK_UNREAD"), systemImage: "minus.circle")
+                    }
+                    .tint(.orange)
+                } else {
+                    // Chapter is unread, show read action
+                    Button {
+                        Task {
+                            await viewModel.markRead(chapters: [chapter])
+                        }
+                    } label: {
+                        Label(NSLocalizedString("MARK_READ"), systemImage: "checkmark.circle")
+                    }
+                    .tint(.blue)
+                }
+            }
+        }
         .listRowInsets(.zero)
         .disabled(locked)
         .opacity(opacity)

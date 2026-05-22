@@ -102,14 +102,16 @@ extension MangaView {
             NotificationCenter.default.publisher(for: .migratedManga)
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] output in
-                    guard
-                        let self,
-                        let migration = output.object as? (from: Manga, to: Manga),
-                        migration.from.id == self.manga.key && migration.from.sourceId == self.manga.sourceKey,
-                        let newSource = SourceManager.shared.source(for: migration.to.sourceId)
-                    else { return }
-                    self.source = newSource
-                    self.manga = migration.to.toNew()
+                    Task { @MainActor in
+                        guard let self else { return }
+                        if let migration = output.object as? (from: AidokuRunner.Manga, to: AidokuRunner.Manga) {
+                            guard migration.from.identifier == self.manga.identifier else { return }
+                            await self.reloadAfterMigration(to: migration.to)
+                        } else if let migration = output.object as? (from: Manga, to: Manga) {
+                            guard migration.from.identifier == self.manga.identifier else { return }
+                            await self.reloadAfterMigration(to: migration.to.toNew())
+                        }
+                    }
                 }
                 .store(in: &cancellables)
 
@@ -293,8 +295,8 @@ extension MangaView.ViewModel {
     }
 
     // fetch complete info for manga, called when view appears
-    func fetchDetails() async {
-        guard !fetchedDetails else { return }
+    func fetchDetails(force: Bool = false) async {
+        guard force || !fetchedDetails else { return }
         fetchedDetails = true
 
         if let cachedManga = CoreDataManager.shared.getManga(sourceId: self.manga.sourceKey, mangaId: self.manga.key) {
@@ -314,6 +316,33 @@ extension MangaView.ViewModel {
         await loadBookmarked()
         await loadHistory()
         await fetchData()
+    }
+
+    private func reloadAfterMigration(to newManga: AidokuRunner.Manga) async {
+        source = SourceManager.shared.source(for: newManga.sourceKey)
+        fetchedDetails = false
+        markedOpened = false
+        bookmarked = false
+        error = nil
+
+        readingHistory = [:]
+        downloadProgress = [:]
+        downloadStatus = [:]
+        otherDownloadedChapters = []
+        nextChapter = nil
+        readingInProgress = false
+        allChaptersLocked = false
+        allChaptersRead = false
+        initialDataLoaded = false
+        let displayModeKey = "Manga.chapterDisplayMode.\(newManga.uniqueKey)"
+        chapterTitleDisplayMode = .init(rawValue: UserDefaults.standard.integer(forKey: displayModeKey)) ?? .default
+
+        withAnimation {
+            manga = newManga
+            chapters = newManga.chapters ?? []
+        }
+
+        await fetchDetails(force: true)
     }
 
     // fetches manga data, from coredata if in library or from source if not
