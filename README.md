@@ -8,11 +8,16 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 ## That said, Extra has: 
 - Import support for Tachiyomi and Mihon backups without conversion. Thanks to [beer-psi](https://github.com/beer-psi) for the [tachiyomi-aidoku-converter](https://github.com/beer-psi/tachiyomi-aidoku-converter) which i based the swift converter.
+
 - Option to set the display frame rate to 60Hz or 120Hz (for iPhones and iPads with ProMotion displays) to change it go to settings-> appearance-> refresh rate
-- Ability to delete and rename your backups
-- fixed migration so now read/unrad chapters are correctly perserved when migrating.
-- duplicate deletion. it can automatically finds duplicated mangas in library you can select which to delete.
-- swipe from right to left to mark a chapter read/unread
+
+- Ability to delete and rename your backups.
+
+- Fixed migration so that read/unread chapters are now correctly preserved when migrating.
+
+- Duplicate deletion: it automatically finds duplicated manga in the library, and you can select which ones to delete.
+
+- Swipe from right to left to mark a chapter as read or unread.
 
 # Contributing
 
