@@ -41,3 +41,5 @@ This is a **fork**, so you do not need to sign any CLA. However, GPLv3 applies t
 **Code I have written for Aidoku-Extra** (Aidoku-Extra specific features) is my own work and also remains under GPLv3. Any code I've written can be used, modified, and distributed under the same GPLv3 terms.
 
 You are free to fork this fork, modify it, and distribute it under the same GPLv3 terms. No special permissions needed.
+
+## For more information on what you can and cant do please check the main [Aidoku repo](https://github.com/Aidoku/Aidoku).
