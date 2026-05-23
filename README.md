@@ -19,7 +19,7 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 - Swipe from right to left to mark a chapter as read or unread.
 
-- Notifications system: simple notification alerts to keep readers updated.
+- Notifications system: each manga in your library now has a bell icon that you can toggle to enable/disable notifications. This allows you to selectively receive notifications only for the manga you want, preventing notification spam from your entire library.
 
 # Contributing
 
