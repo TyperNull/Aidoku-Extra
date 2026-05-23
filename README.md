@@ -7,7 +7,7 @@ Do not expect polished PRs or clean code. Why? My Swift knowledge is still prett
 DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 ## That said, Extra has: 
-- Import support for Tachiyomi and Mihon backups without conversion. Thanks to [beer-psi](https://github.com/beer-psi) for the [tachiyomi-aidoku-converter](https://github.com/beer-psi/tachiyomi-aidoku-converter) which i based the swift converter.
+- Import support for Tachiyomi and Mihon backups without conversion. Thanks to [beer-psi](https://github.com/beer-psi) for the [tachiyomi-aidoku-converter](https://github.com/beer-psi/tachiyomi-ai[...]
 
 - Option to set the display frame rate to 60Hz or 120Hz (for iPhones and iPads with ProMotion displays) to change it go to settings-> appearance-> refresh rate
 
@@ -19,9 +19,11 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 - Swipe from right to left to mark a chapter as read or unread.
 
+- Notifications system: simple notification alerts to keep readers updated.
+
 # Contributing
 
 No? lol.
 Please contribute to the main Aidoku repo instead of this fork.
 
-This repo (excluding translations) is licensed under [GPLv3](https://github.com/Aidoku/Aidoku/blob/main/LICENSE), but contributors must also sign the project [CLA](https://gist.github.com/Skittyblock/893952ff23f0df0e5cd02abbaddc2be9). Essentially, this just gives me (Skittyblock) the ability to distribute Aidoku via TestFlight/the App Store, but others must obtain an exception from me in order to do the same. Otherwise, GPLv3 applies and this code can be used freely as long as the modified source code is made available.
+This repo (excluding translations) is licensed under [GPLv3](https://github.com/Aidoku/Aidoku/blob/main/LICENSE), but contributors must also sign the project [CLA](https://gist.github.com/Skittybl[...]
