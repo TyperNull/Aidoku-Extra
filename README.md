@@ -30,4 +30,14 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 No? lol.
 Please contribute to the main Aidoku repo instead of this fork.
 
-This repo (excluding translations) is licensed under [GPLv3](https://github.com/Aidoku/Aidoku/blob/main/LICENSE), but contributors must also sign the project [CLA](https://gist.github.com/Skittybl[...]
+
+This repo (excluding translations) is licensed under [GPLv3](https://github.com/Aidoku/Aidoku/blob/main/LICENSE).
+
+This is a **fork**, so you do not need to sign any CLA. However, GPLv3 applies to all code derived from Aidoku - this code can be used freely as long as:
+- You keep modifications open-source
+- You make the modified source code available to others
+- You attribute the original Aidoku project and authors
+
+**Code I have written for Aidoku-Extra** (Aidoku-Extra specific features) is my own work and also remains under GPLv3. Any code I've written can be used, modified, and distributed under the same GPLv3 terms.
+
+You are free to fork this fork, modify it, and distribute it under the same GPLv3 terms. No special permissions needed.
