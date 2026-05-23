@@ -17,6 +17,7 @@ struct HistoryView: View {
     @State private var entryToDelete: HistoryEntry?
     @State private var showClearHistoryConfirm = false
     @State private var showDeleteConfirm = false
+    @State private var selectedTab = 0
 
     @State private var triggerLoadMoreVisibleCheck = false
     @State private var loadTask: Task<(), Never>?
@@ -28,6 +29,98 @@ struct HistoryView: View {
     @EnvironmentObject private var path: NavigationCoordinator
 
     var body: some View {
+        Group {
+            if selectedTab == 0 {
+                readHistoryView
+            } else {
+                NotificationHistoryView()
+            }
+        }
+        .navigationTitle(selectedTab == 0 ? NSLocalizedString("READ_HISTORY") : NSLocalizedString("NOTIFICATION_HISTORY"))
+        .navigationBarTitleDisplayMode(.automatic)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Menu {
+                    Button {
+                        selectedTab = 0
+                    } label: {
+                        Label(NSLocalizedString("READ_HISTORY"), systemImage: selectedTab == 0 ? "checkmark" : "")
+                    }
+                    Button {
+                        selectedTab = 1
+                    } label: {
+                        Label(NSLocalizedString("NOTIFICATION_HISTORY"), systemImage: selectedTab == 1 ? "checkmark" : "")
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(selectedTab == 0 ? NSLocalizedString("READ_HISTORY") : NSLocalizedString("NOTIFICATION_HISTORY"))
+                            .font(.headline)
+                        Image(systemName: "chevron.down")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if selectedTab == 0 {
+                    if UserDefaults.standard.bool(forKey: "History.lockHistoryTab") {
+                        Button {
+                            if locked {
+                                Task {
+                                    await unlock()
+                                }
+                            } else {
+                                locked = true
+                            }
+                        } label: {
+                            Image(systemName: locked ? "lock" : "lock.open")
+                        }
+                    }
+                    Button {
+                        showClearHistoryConfirm = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
+        }
+        .confirmationDialogOrAlert(NSLocalizedString("CLEAR_READ_HISTORY"), isPresented: $showClearHistoryConfirm, titleVisibility: .visible) {
+            Button(NSLocalizedString("CLEAR"), role: .destructive) {
+                viewModel.clearHistory()
+            }
+        } message: {
+            Text(NSLocalizedString("CLEAR_READ_HISTORY_TEXT"))
+        }
+        .confirmationDialogOrAlert(NSLocalizedString("CLEAR_READ_HISTORY"), isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+            Button(NSLocalizedString("REMOVE"), role: .destructive) {
+                if let entryToDelete {
+                    Task {
+                        await viewModel.removeHistory(entry: entryToDelete)
+                    }
+                }
+            }
+            Button(NSLocalizedString("REMOVE_ALL_MANGA_HISTORY"), role: .destructive) {
+                if let entryToDelete {
+                    Task {
+                        await viewModel.removeHistory(entry: entryToDelete, all: true)
+                    }
+                }
+            }
+        } message: {
+            Text(NSLocalizedString("CLEAR_READ_HISTORY_TEXT"))
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .historyLockTabSetting)) { _ in
+            // update locked state when the setting changes
+            locked = UserDefaults.standard.bool(forKey: "History.lockHistoryTab")
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            // lock the view when the app is backgrounded
+            locked = UserDefaults.standard.bool(forKey: "History.lockHistoryTab")
+        }
+    }
+    
+    var readHistoryView: some View {
         Group {
             if locked {
                 lockedView
@@ -84,63 +177,6 @@ struct HistoryView: View {
             }
         }
         .animation(.default, value: viewModel.filteredHistory)
-        .navigationTitle(NSLocalizedString("HISTORY"))
-        .navigationBarTitleDisplayMode(.automatic)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                if UserDefaults.standard.bool(forKey: "History.lockHistoryTab") {
-                    Button {
-                        if locked {
-                            Task {
-                                await unlock()
-                            }
-                        } else {
-                            locked = true
-                        }
-                    } label: {
-                        Image(systemName: locked ? "lock" : "lock.open")
-                    }
-                }
-                Button {
-                    showClearHistoryConfirm = true
-                } label: {
-                    Image(systemName: "trash")
-                }
-            }
-        }
-        .confirmationDialogOrAlert(NSLocalizedString("CLEAR_READ_HISTORY"), isPresented: $showClearHistoryConfirm, titleVisibility: .visible) {
-            Button(NSLocalizedString("CLEAR"), role: .destructive) {
-                viewModel.clearHistory()
-            }
-        } message: {
-            Text(NSLocalizedString("CLEAR_READ_HISTORY_TEXT"))
-        }
-        .confirmationDialogOrAlert(NSLocalizedString("CLEAR_READ_HISTORY"), isPresented: $showDeleteConfirm, titleVisibility: .visible) {
-            Button(NSLocalizedString("REMOVE"), role: .destructive) {
-                if let entryToDelete {
-                    Task {
-                        await viewModel.removeHistory(entry: entryToDelete)
-                    }
-                }
-            }
-            Button(NSLocalizedString("REMOVE_ALL_MANGA_HISTORY"), role: .destructive) {
-                if let entryToDelete {
-                    Task {
-                        await viewModel.removeHistory(entry: entryToDelete, all: true)
-                    }
-                }
-            }
-        } message: {
-            Text(NSLocalizedString("CLEAR_READ_HISTORY_TEXT"))
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .historyLockTabSetting)) { _ in
-            // update locked state when the setting changes
-            locked = UserDefaults.standard.bool(forKey: "History.lockHistoryTab")
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-            // lock the view when the app is backgrounded
-            locked = UserDefaults.standard.bool(forKey: "History.lockHistoryTab")
-        }
     }
 
     var lockedView: some View {

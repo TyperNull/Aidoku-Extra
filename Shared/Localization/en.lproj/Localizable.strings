@@ -366,6 +366,7 @@
 "MARK_PREVIOUS" = "Mark Previous";
 "MARK_READ" = "Mark as Read";
 "MARK_UNREAD" = "Mark as Unread";
+"NEW_CHAPTERS_AVAILABLE" = "%i new chapters available";
 "PREVIOUS_COLON" = "Previous:";
 "NEXT_COLON" = "Next:";
 "FINISHED_COLON" = "Finished:";
@@ -390,6 +391,8 @@
 
 // History
 "HISTORY" = "History";
+"READ_HISTORY" = "Read History";
+"NOTIFICATION_HISTORY" = "Notification History";
 "%@_AGO" = "%@ ago";
 "PAGE_X" = "Page %i";
 "REMOVE_CHAPTER_HISTORY_TEXT" = "This will remove history for this chapter. Are you sure you want to continue?";
@@ -777,3 +780,34 @@
 "TOGGLE_BARS" = "Toggle bar visibility";
 "CLOSE_READER" = "Close reader";
 "TOGGLE_PAGE_OFFSET" = "Toggle page offset";
+
+// Notifications
+"NOTIFICATIONS" = "Notifications";
+"ENABLE_NOTIFICATIONS" = "Enable Notifications";
+"NOTIFICATIONS_ENABLED" = "Notifications Enabled";
+"NOTIFICATIONS_DISABLED" = "Notifications Disabled";
+"NOTIFICATIONS_DISABLED_TEXT" = "Notifications are disabled for Aidoku. To receive notifications about new chapters, please enable notifications in Settings.";
+"OPEN_SETTINGS" = "Open Settings";
+"PERMISSIONS" = "Permissions";
+"NOTIFICATIONS_PERMISSION_TEXT" = "Allow Aidoku to send notifications when new chapters are available for manga in your library.";
+"NOTIFICATION_STYLE" = "Notification Style";
+"GROUP_NOTIFICATIONS" = "Group Notifications";
+"GROUP_NOTIFICATIONS_TEXT" = "Group multiple manga updates into a single notification summary.";
+"RICH_NOTIFICATIONS" = "Rich Notifications";
+"RICH_NOTIFICATIONS_TEXT" = "Show manga cover images in notifications.";
+"NOTIFICATION_HISTORY" = "Notification History";
+"CLEAR_NOTIFICATION_HISTORY" = "Clear Notification History";
+"CLEAR_NOTIFICATION_HISTORY_TEXT" = "Are you sure you want to clear all notification history? This action cannot be undone.";
+"NO_NOTIFICATION_HISTORY" = "No Notification History";
+"NO_NOTIFICATION_HISTORY_TEXT" = "Notifications you receive will appear here.";
+"NOTIFICATIONS_INFO_TEXT" = "You can enable or disable notifications for individual manga from their detail pages. Notifications will only be sent for manga in your library.";
+"NEW_CHAPTERS_AVAILABLE" = "%d new chapters available";
+"SEND_TEST_NOTIFICATION" = "Send Test Notification";
+"TEST_NOTIFICATION_TEXT" = "Send a test notification to verify that notifications are working correctly.";
+"TEST_NOTIFICATION_SENT" = "Test Notification Sent";
+"TEST_NOTIFICATION_SENT_TEXT" = "Check your notification center to see the test notification.";
+"TEST_NOTIFICATION_TITLE" = "Test Notification";
+"TEST_NOTIFICATION_BODY" = "Notifications are working! You'll receive updates when new chapters are available.";
+"HISTORY" = "History";
+
+"READ_HISTORY" = "Read History";

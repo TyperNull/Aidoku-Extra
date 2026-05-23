@@ -49,6 +49,7 @@ struct MangaDetailsHeaderView: View {
     @State private var isTracking = false
     @State private var hasAvailableTrackers = false
     @State private var showLibraryRemoveConfirm = false
+    @State private var notificationsEnabled = false
 
     static let coverWidth: CGFloat = 114
 
@@ -96,6 +97,10 @@ struct MangaDetailsHeaderView: View {
         self.onReadButtonPressed = onReadButtonPressed
 
         self._isTracking = State(initialValue: TrackerManager.shared.isTracking(
+            sourceId: manga.wrappedValue.sourceKey,
+            mangaId: manga.wrappedValue.key
+        ))
+        self._notificationsEnabled = State(initialValue: NotificationManager.shared.isNotificationEnabled(
             sourceId: manga.wrappedValue.sourceKey,
             mangaId: manga.wrappedValue.key
         ))
@@ -339,6 +344,19 @@ struct MangaDetailsHeaderView: View {
                 Text(NSLocalizedString("REMOVE_FROM_LIBRARY_CONFIRM_TEXT"))
             }
 
+            // Notification toggle button
+            if bookmarked {
+                Button {
+                    Task {
+                        await toggleNotifications()
+                    }
+                } label: {
+                    Image(systemName: notificationsEnabled ? "bell.fill" : "bell")
+                }
+                .buttonStyle(MangaActionButtonStyle(selected: notificationsEnabled))
+                .transition(.opacity)
+            }
+
             if hasAvailableTrackers {
                 Button {
                     onTrackerButtonPressed?()
@@ -425,6 +443,9 @@ struct MangaDetailsHeaderView: View {
                 mangaId: mangaId
             )
             bookmarked = false
+            // Also disable notifications when removing from library
+            notificationsEnabled = false
+            NotificationManager.shared.setNotificationEnabled(false, sourceId: sourceId, mangaId: mangaId)
         } else {
             if MangaManager.shouldAskForCategories() { // open category select view
                 let viewController = UINavigationController(rootViewController: CategorySelectViewController(manga: manga))
@@ -436,6 +457,32 @@ struct MangaDetailsHeaderView: View {
                     chapters: manga.chapters ?? []
                 )
             }
+        }
+    }
+
+    func toggleNotifications() async {
+        let sourceId = manga.sourceKey
+        let mangaId = manga.key
+
+        if !notificationsEnabled {
+            // Request permission if not already granted
+            let authorized = await NotificationManager.shared.checkAuthorizationStatus()
+            if !authorized {
+                let granted = await NotificationManager.shared.requestAuthorization()
+                if !granted {
+                    // User denied permission, show alert
+                    return
+                }
+            }
+            // Enable notifications
+            notificationsEnabled = true
+            NotificationManager.shared.setNotificationEnabled(true, sourceId: sourceId, mangaId: mangaId)
+        } else {
+            // Disable notifications
+            notificationsEnabled = false
+            NotificationManager.shared.setNotificationEnabled(false, sourceId: sourceId, mangaId: mangaId)
+            // Clear existing notifications for this manga
+            await NotificationManager.shared.clearNotifications(sourceId: sourceId, mangaId: mangaId)
         }
     }
 

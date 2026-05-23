@@ -571,6 +571,7 @@ extension MangaManager {
                     if !newChapters.isEmpty {
                         // add manga updates
                         let scanlatorFilter = mangaObject.scanlatorFilter ?? []
+                        var filteredNewChapters: [ChapterObject] = []
                         for chapter in newChapters
                         where
                             mangaObject.langFilter != nil ? chapter.lang == mangaObject.langFilter : true
@@ -582,9 +583,20 @@ extension MangaManager {
                                 chapterObject: chapter,
                                 context: context
                             )
+                            filteredNewChapters.append(chapter)
                         }
                         libraryObject.lastChapter = chapters.compactMap { $0.dateUploaded }.max()
                         libraryObject.lastUpdatedChapters = Date.now
+
+                        // Send notification for new chapters if enabled
+                        if !filteredNewChapters.isEmpty {
+                            Task { @MainActor in
+                                await NotificationManager.shared.sendChapterNotification(
+                                    manga: newManga,
+                                    chapters: filteredNewChapters.map { $0.toNewChapter() }
+                                )
+                            }
+                        }
                     }
 
                     if updateMetadata || !newChapters.isEmpty {

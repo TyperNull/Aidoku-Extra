@@ -60,6 +60,15 @@ enum Settings {
                 ))
             ),
             .init(
+                key: "Notifications",
+                title: NSLocalizedString("NOTIFICATIONS"),
+                value: .page(.init(
+                    items: [],
+                    inlineTitle: true,
+                    icon: .system(name: "bell.fill", color: "red")
+                ))
+            ),
+            .init(
                 title: NSLocalizedString("ICLOUD_SYNC"),
                 value: .page(.init(
                     items: [

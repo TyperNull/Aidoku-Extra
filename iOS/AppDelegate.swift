@@ -9,9 +9,10 @@ import AidokuRunner
 import CloudKit
 import Nuke
 import SwiftUI
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 #if CANONICAL_BUILD          // true only for App-Store scheme
     static let canonicalID = "app.aidoku.Aidoku"
 #else
@@ -202,7 +203,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 "Library.deleteDownloadAfterReading": false,
                 "Downloads.compress": true,
                 "Downloads.parallel": true,
-                "Downloads.background": true
+                "Downloads.background": true,
+                
+                "Notifications.grouping": false,
+                "Notifications.richNotifications": true
             ]
         )
 
@@ -270,6 +274,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             await BackupManager.shared.scheduleAutoBackup()
             await MangaManager.shared.scheduleLibraryRefresh()
         }
+        
+        // Set notification delegate for deep linking
+        UNUserNotificationCenter.current().delegate = self
 
         return true
     }
@@ -823,6 +830,84 @@ extension AppDelegate: ImagePipelineDelegate {
             ImageDecoders.Empty.init()
         } else {
             pipeline.configuration.makeImageDecoder(context)
+        }
+    }
+}
+
+
+// MARK: - UNUserNotificationCenterDelegate
+extension AppDelegate {
+    /// Handle notification tap when app is in foreground
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show notification even when app is in foreground
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    /// Handle notification tap
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
+        
+        guard
+            let sourceId = userInfo["sourceId"] as? String,
+            let mangaId = userInfo["mangaId"] as? String,
+            let type = userInfo["type"] as? String,
+            type == "newChapter"
+        else {
+            completionHandler()
+            return
+        }
+        
+        // Handle deep link to manga page
+        Task { @MainActor in
+            guard let navigationController else {
+                completionHandler()
+                return
+            }
+            
+            // Find the source
+            guard let source = SourceManager.shared.source(for: sourceId) else {
+                LogManager.logger.error("Source not found for notification: \(sourceId)")
+                completionHandler()
+                return
+            }
+            
+            do {
+                // Fetch manga details
+                let manga = try await source.getMangaUpdate(
+                    manga: AidokuRunner.Manga(sourceKey: sourceId, key: mangaId, title: ""),
+                    needsDetails: true,
+                    needsChapters: false
+                )
+                
+                // Navigate to manga page
+                navigationController.pushViewController(
+                    MangaViewController(
+                        source: source,
+                        manga: manga,
+                        parent: navigationController.topViewController,
+                        chapterKey: nil,
+                        openAction: nil
+                    ),
+                    animated: true
+                )
+                
+                // Clear this notification
+                await NotificationManager.shared.clearNotifications(sourceId: sourceId, mangaId: mangaId)
+                
+                LogManager.logger.info("Opened manga from notification: \(manga.title)")
+            } catch {
+                LogManager.logger.error("Failed to open manga from notification: \(error)")
+            }
+            
+            completionHandler()
         }
     }
 }

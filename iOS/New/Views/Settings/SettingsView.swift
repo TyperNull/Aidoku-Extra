@@ -296,6 +296,8 @@ extension SettingsView {
             UpscaleModelListView()
         } else if key == "Tracking" {
             SettingsTrackingView()
+        } else if key == "Notifications" {
+            NotificationsView().environmentObject(path)
         } else if key == "About" {
             SettingsAboutView()
         } else if key == "Insights" {
