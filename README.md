@@ -27,7 +27,7 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 # Contributing
 
-No? lol.
+No lol.
 Please contribute to the main Aidoku repo instead of this fork.
 
 
@@ -42,4 +42,4 @@ This is a **fork**, so you do not need to sign any CLA. However, GPLv3 applies t
 
 You are free to fork this fork, modify it, and distribute it under the same GPLv3 terms. No special permissions needed.
 
-## For more information on what you can and cant do please check the main [Aidoku repo](https://github.com/Aidoku/Aidoku).
+# For more information on what you can and cant do please check the main [Aidoku repo](https://github.com/Aidoku/Aidoku).
