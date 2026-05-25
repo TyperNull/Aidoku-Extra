@@ -520,6 +520,9 @@ extension MangaManager {
 
         let total = filteredManga.count
         var completed = 0
+        
+        let notificationsEnabled = await NotificationManager.shared.isGloballyEnabled()
+        var pendingNotifications: [(sourceId: String, mangaId: String, title: String, chapterCount: Int, chapters: [AidokuRunner.Chapter], coverUrl: String?)] = []
 
         let newDetails = await {
             var results: [Int: AidokuRunner.Manga] = [:]
@@ -542,7 +545,7 @@ extension MangaManager {
                     results[manga.hashValue] = newManga
                 }
 
-                await CoreDataManager.shared.container.performBackgroundTask { context in
+                let notificationSummary: (sourceId: String, mangaId: String, title: String, chapterCount: Int, chapters: [AidokuRunner.Chapter], coverUrl: String?)? = await CoreDataManager.shared.container.performBackgroundTask { context in
                     guard
                         let libraryObject = CoreDataManager.shared.getLibraryManga(
                             sourceId: manga.sourceId,
@@ -551,7 +554,7 @@ extension MangaManager {
                         ),
                         let mangaObject = libraryObject.manga
                     else {
-                        return
+                        return nil
                     }
 
                     // update details
@@ -560,7 +563,7 @@ extension MangaManager {
                     }
 
                     // update chapters
-                    guard let chapters = newManga.chapters, !chapters.isEmpty else { return }
+                    guard let chapters = newManga.chapters, !chapters.isEmpty else { return nil }
 
                     let newChapters = CoreDataManager.shared.setChapters(
                         chapters,
@@ -568,10 +571,11 @@ extension MangaManager {
                         mangaId: manga.id,
                         context: context
                     )
+                    var notifiableCount = 0
+                    var notifiableChapters: [AidokuRunner.Chapter] = []
                     if !newChapters.isEmpty {
                         // add manga updates
                         let scanlatorFilter = mangaObject.scanlatorFilter ?? []
-                        var filteredNewChapters: [ChapterObject] = []
                         for chapter in newChapters
                         where
                             mangaObject.langFilter != nil ? chapter.lang == mangaObject.langFilter : true
@@ -583,20 +587,11 @@ extension MangaManager {
                                 chapterObject: chapter,
                                 context: context
                             )
-                            filteredNewChapters.append(chapter)
+                            notifiableCount += 1
+                            notifiableChapters.append(chapter.toNewChapter())
                         }
                         libraryObject.lastChapter = chapters.compactMap { $0.dateUploaded }.max()
                         libraryObject.lastUpdatedChapters = Date.now
-
-                        // Send notification for new chapters if enabled
-                        if !filteredNewChapters.isEmpty {
-                            Task { @MainActor in
-                                await NotificationManager.shared.sendChapterNotification(
-                                    manga: newManga,
-                                    chapters: filteredNewChapters.map { $0.toNewChapter() }
-                                )
-                            }
-                        }
                     }
 
                     if updateMetadata || !newChapters.isEmpty {
@@ -606,6 +601,21 @@ extension MangaManager {
                     if context.hasChanges {
                         try? context.save()
                     }
+                    
+                    guard notifiableCount > 0 else { return nil }
+                    let title = mangaObject.title.isEmpty ? (manga.title ?? "") : mangaObject.title
+                    return (
+                        sourceId: manga.sourceId,
+                        mangaId: manga.id,
+                        title: title,
+                        chapterCount: notifiableCount,
+                        chapters: notifiableChapters,
+                        coverUrl: newManga.cover
+                    )
+                }
+                
+                if notificationsEnabled, let summary = notificationSummary {
+                    pendingNotifications.append(summary)
                 }
 
                 completed += 1
@@ -615,6 +625,10 @@ extension MangaManager {
 
             return results
         }()
+        
+        if notificationsEnabled, !pendingNotifications.isEmpty {
+            await NotificationManager.shared.notifyNewChapters(summaries: pendingNotifications)
+        }
 
         if updateMetadata {
             for mangaItem in filteredManga {

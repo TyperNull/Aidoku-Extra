@@ -10,8 +10,7 @@ import UserNotifications
 import AidokuRunner
 import UIKit
 
-@MainActor
-class NotificationManager {
+actor NotificationManager {
     static let shared = NotificationManager()
 
     // Notification history storage
@@ -25,21 +24,44 @@ class NotificationManager {
         let timestamp: Date
         let coverUrl: String?
     }
+    
+    // Settings keys
+    static let globalSettingKey = "Library.notifyNewChapters"
+    static let categoryIdentifier = "newChapters"
+    static let threadIdentifier = "manga-updates"
 
     private init() {}
+    
+    /// Check if global notifications are enabled
+    nonisolated func isGloballyEnabled() -> Bool {
+        UserDefaults.standard.bool(forKey: Self.globalSettingKey)
+    }
 
     /// Request notification permissions from the user
     func requestAuthorization(showErrorAlert: Bool = false) async -> Bool {
-        do {
-            let granted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
-            
-            if !granted && showErrorAlert {
-                await showPermissionDeniedAlert()
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        
+        switch settings.authorizationStatus {
+        case .authorized, .provisional:
+            return true
+        case .notDetermined:
+            do {
+                let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                
+                if !granted && showErrorAlert {
+                    await showPermissionDeniedAlert()
+                }
+                
+                return granted
+            } catch {
+                LogManager.logger.error("Failed to request notification authorization: \(error)")
+                if showErrorAlert {
+                    await showPermissionDeniedAlert()
+                }
+                return false
             }
-            
-            return granted
-        } catch {
-            LogManager.logger.error("Failed to request notification authorization: \(error)")
+        default:
             if showErrorAlert {
                 await showPermissionDeniedAlert()
             }
@@ -49,63 +71,132 @@ class NotificationManager {
     
     /// Show alert when notification permission is denied
     private func showPermissionDeniedAlert() async {
-        let alert = UIAlertController(
-            title: NSLocalizedString("NOTIFICATIONS_DISABLED"),
-            message: NSLocalizedString("NOTIFICATIONS_DISABLED_TEXT"),
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(
-            title: NSLocalizedString("OPEN_SETTINGS"),
-            style: .default
-        ) { _ in
-            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(settingsUrl)
+        await MainActor.run {
+            let alert = UIAlertController(
+                title: NSLocalizedString("NOTIFICATIONS_DISABLED"),
+                message: NSLocalizedString("NOTIFICATIONS_DISABLED_TEXT"),
+                preferredStyle: .alert
+            )
+            
+            alert.addAction(UIAlertAction(
+                title: NSLocalizedString("OPEN_SETTINGS"),
+                style: .default
+            ) { _ in
+                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsUrl)
+                }
+            })
+            
+            alert.addAction(UIAlertAction(
+                title: NSLocalizedString("CANCEL"),
+                style: .cancel
+            ))
+            
+            if let topViewController = UIApplication.shared.firstKeyWindow?.rootViewController {
+                var presentingVC = topViewController
+                while let presented = presentingVC.presentedViewController {
+                    presentingVC = presented
+                }
+                presentingVC.present(alert, animated: true)
             }
-        })
-        
-        alert.addAction(UIAlertAction(
-            title: NSLocalizedString("CANCEL"),
-            style: .cancel
-        ))
-        
-        if let topViewController = UIApplication.shared.firstKeyWindow?.rootViewController {
-            var presentingVC = topViewController
-            while let presented = presentingVC.presentedViewController {
-                presentingVC = presented
-            }
-            presentingVC.present(alert, animated: true)
         }
     }
 
     /// Check if notifications are authorized
     func checkAuthorizationStatus() async -> Bool {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
-        return settings.authorizationStatus == .authorized
+        return settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional
     }
 
     /// Check if notifications are enabled for a specific manga
-    func isNotificationEnabled(sourceId: String, mangaId: String) -> Bool {
+    nonisolated func isNotificationEnabled(sourceId: String, mangaId: String) -> Bool {
         UserDefaults.standard.bool(forKey: "Notifications.enabled.\(sourceId).\(mangaId)")
     }
 
     /// Enable or disable notifications for a specific manga
-    func setNotificationEnabled(_ enabled: Bool, sourceId: String, mangaId: String) {
+    nonisolated func setNotificationEnabled(_ enabled: Bool, sourceId: String, mangaId: String) {
         UserDefaults.standard.set(enabled, forKey: "Notifications.enabled.\(sourceId).\(mangaId)")
     }
     
     /// Check if notification grouping is enabled
-    var isGroupingEnabled: Bool {
+    nonisolated var isGroupingEnabled: Bool {
         UserDefaults.standard.bool(forKey: "Notifications.grouping")
     }
     
     /// Check if rich notifications (with images) are enabled
-    var isRichNotificationsEnabled: Bool {
+    nonisolated var isRichNotificationsEnabled: Bool {
         UserDefaults.standard.bool(forKey: "Notifications.richNotifications")
     }
+    
+    // MARK: - Send Notifications
+    
+    /// Send notifications for multiple manga (called from MangaManager during library refresh)
+    func notifyNewChapters(summaries: [(sourceId: String, mangaId: String, title: String, chapterCount: Int, chapters: [AidokuRunner.Chapter], coverUrl: String?)]) async {
+        guard !summaries.isEmpty, isGloballyEnabled() else { return }
+        guard await checkAuthorizationStatus() else { return }
+        
+        for summary in summaries {
+            // Check per-manga setting
+            guard isNotificationEnabled(sourceId: summary.sourceId, mangaId: summary.mangaId) else { continue }
+            
+            let content = UNMutableNotificationContent()
+            content.title = summary.title
+            
+            if summary.chapterCount == 1 {
+                content.body = NSLocalizedString("1_NEW_CHAPTER_AVAILABLE")
+            } else {
+                content.body = String(format: NSLocalizedString("X_NEW_CHAPTERS_AVAILABLE"), summary.chapterCount)
+            }
+            
+            content.sound = .default
+            content.threadIdentifier = Self.threadIdentifier
+            content.categoryIdentifier = Self.categoryIdentifier
+            
+            // Add grouping if enabled
+            if isGroupingEnabled {
+                content.threadIdentifier = Self.threadIdentifier
+                content.categoryIdentifier = Self.categoryIdentifier
+            }
+            
+            // Add rich notification with cover image if enabled
+            if isRichNotificationsEnabled, let coverUrl = summary.coverUrl {
+                await addCoverAttachment(to: content, coverUrl: coverUrl)
+            }
+            
+            // Add user info for deep linking
+            content.userInfo = [
+                "sourceId": summary.sourceId,
+                "mangaId": summary.mangaId,
+                "type": "newChapter"
+            ]
+            
+            let identifier = "chapter-\(summary.sourceId)-\(summary.mangaId)-\(Int(Date().timeIntervalSince1970))"
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+            
+            do {
+                try await UNUserNotificationCenter.current().add(request)
+                
+                // Save to notification history
+                await saveToHistory(
+                    id: identifier,
+                    sourceId: summary.sourceId,
+                    mangaId: summary.mangaId,
+                    title: summary.title,
+                    chapterCount: summary.chapterCount,
+                    chapters: summary.chapters,
+                    coverUrl: summary.coverUrl
+                )
+                
+                LogManager.logger.info("Sent notification for \(summary.title): \(summary.chapterCount) new chapter(s)")
+            } catch {
+                LogManager.logger.error("Failed to send notification: \(error)")
+            }
+        }
+    }
 
-    /// Send a notification for new chapters
+    /// Send a notification for new chapters (legacy method for compatibility)
     func sendChapterNotification(manga: AidokuRunner.Manga, chapters: [AidokuRunner.Chapter]) async {
+        guard isGloballyEnabled() else { return }
         guard await checkAuthorizationStatus() else { return }
         guard isNotificationEnabled(sourceId: manga.sourceKey, mangaId: manga.key) else { return }
 
@@ -116,15 +207,15 @@ class NotificationManager {
             let chapter = chapters[0]
             content.body = chapter.formattedTitle(forceMode: .default)
         } else {
-            content.body = String(format: NSLocalizedString("NEW_CHAPTERS_AVAILABLE"), chapters.count)
+            content.body = String(format: NSLocalizedString("X_NEW_CHAPTERS_AVAILABLE"), chapters.count)
         }
 
         content.sound = .default
         
         // Add grouping if enabled
         if isGroupingEnabled {
-            content.threadIdentifier = "manga-updates"
-            content.categoryIdentifier = "MANGA_UPDATE"
+            content.threadIdentifier = Self.threadIdentifier
+            content.categoryIdentifier = Self.categoryIdentifier
         }
         
         // Add rich notification with cover image if enabled
@@ -152,8 +243,12 @@ class NotificationManager {
             // Save to notification history
             await saveToHistory(
                 id: identifier,
-                manga: manga,
-                chapters: chapters
+                sourceId: manga.sourceKey,
+                mangaId: manga.key,
+                title: manga.title,
+                chapterCount: chapters.count,
+                chapters: chapters,
+                coverUrl: manga.cover
             )
             
             LogManager.logger.info("Sent notification for \(manga.title): \(chapters.count) new chapter(s)")
@@ -219,18 +314,26 @@ class NotificationManager {
     // MARK: - Notification History
     
     /// Save notification to history
-    private func saveToHistory(id: String, manga: AidokuRunner.Manga, chapters: [AidokuRunner.Chapter]) async {
+    private func saveToHistory(
+        id: String,
+        sourceId: String,
+        mangaId: String,
+        title: String,
+        chapterCount: Int,
+        chapters: [AidokuRunner.Chapter],
+        coverUrl: String?
+    ) async {
         var history = getNotificationHistory()
         
         let item = NotificationHistoryItem(
             id: id,
-            sourceId: manga.sourceKey,
-            mangaId: manga.key,
-            mangaTitle: manga.title,
-            chapterCount: chapters.count,
+            sourceId: sourceId,
+            mangaId: mangaId,
+            mangaTitle: title,
+            chapterCount: chapterCount,
             chapterTitles: chapters.map { $0.formattedTitle(forceMode: .default) },
             timestamp: Date(),
-            coverUrl: manga.cover
+            coverUrl: coverUrl
         )
         
         history.insert(item, at: 0)
@@ -246,7 +349,7 @@ class NotificationManager {
     }
     
     /// Get notification history
-    func getNotificationHistory() -> [NotificationHistoryItem] {
+    nonisolated func getNotificationHistory() -> [NotificationHistoryItem] {
         guard let data = UserDefaults.standard.data(forKey: "Notifications.history"),
               let history = try? JSONDecoder().decode([NotificationHistoryItem].self, from: data) else {
             return []
@@ -255,12 +358,12 @@ class NotificationManager {
     }
     
     /// Clear notification history
-    func clearNotificationHistory() {
+    nonisolated func clearNotificationHistory() {
         UserDefaults.standard.removeObject(forKey: "Notifications.history")
     }
     
     /// Remove a specific item from history
-    func removeFromHistory(id: String) {
+    nonisolated func removeFromHistory(id: String) {
         var history = getNotificationHistory()
         history.removeAll { $0.id == id }
         
@@ -282,8 +385,8 @@ class NotificationManager {
         
         // Add grouping if enabled
         if isGroupingEnabled {
-            content.threadIdentifier = "manga-updates"
-            content.categoryIdentifier = "MANGA_UPDATE"
+            content.threadIdentifier = Self.threadIdentifier
+            content.categoryIdentifier = Self.categoryIdentifier
         }
         
         // Add user info

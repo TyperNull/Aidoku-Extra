@@ -142,6 +142,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 "Library.backgroundRefresh": true,
                 "Library.updateOnlyOnWifi": true,
                 "Library.refreshMetadata": false,
+                "Library.notifyNewChapters": false,
 
                 "Browse.languages": ["multi"] + Locale.preferredLanguages.map { Locale(identifier: $0).languageCode },
                 "Browse.contentRatings": ["safe", "containsNsfw"],
@@ -277,8 +278,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Set notification delegate for deep linking
         UNUserNotificationCenter.current().delegate = self
+        
+        // Observe notification setting changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleNotifyNewChaptersToggle(_:)),
+            name: Notification.Name(NotificationManager.globalSettingKey),
+            object: nil
+        )
 
         return true
+    }
+    
+    @objc private func handleNotifyNewChaptersToggle(_ note: Notification) {
+        let enabled = (note.object as? Bool) ?? UserDefaults.standard.bool(forKey: NotificationManager.globalSettingKey)
+        guard enabled else { return }
+        Task {
+            let granted = await NotificationManager.shared.requestAuthorization()
+            if !granted {
+                await MainActor.run {
+                    UserDefaults.standard.set(false, forKey: NotificationManager.globalSettingKey)
+                    NotificationCenter.default.post(
+                        name: Notification.Name(NotificationManager.globalSettingKey),
+                        object: false
+                    )
+                }
+            }
+        }
     }
 
     func application(

@@ -808,6 +808,9 @@
 "TEST_NOTIFICATION_SENT_TEXT" = "Check your notification center to see the test notification.";
 "TEST_NOTIFICATION_TITLE" = "Test Notification";
 "TEST_NOTIFICATION_BODY" = "Notifications are working! You'll receive updates when new chapters are available.";
+"1_NEW_CHAPTER_AVAILABLE" = "New chapter available";
+"X_NEW_CHAPTERS_AVAILABLE" = "%d new chapters available";
+"NOTIFY_NEW_CHAPTERS" = "Notify on New Chapters";
 "HISTORY" = "History";
 
 "READ_HISTORY" = "Read History";
