@@ -23,7 +23,7 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 - Notifications system: each manga in your library now has a bell icon that you can toggle to enable/disable notifications. This allows you to selectively receive notifications only for the manga you want, preventing notification spam from your entire library.
 
-- History changes: you can check your notification history in case you missed what was the notification about. go to History and from change it to Notification history.
+- History changes: better notification history and managment
 
 # Contributing
 
