@@ -2,7 +2,7 @@
 //  NotificationManager.swift
 //  Aidoku
 //
-//  Created by Kiro on 5/23/26.
+//  Created by typernull on 5/23/26.
 //
 
 import Foundation

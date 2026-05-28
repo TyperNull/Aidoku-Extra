@@ -162,7 +162,7 @@ extension Source {
 
         if !languages.isEmpty {
             // if local language is supported, use it
-            let preferredLanguages = Locale.preferredLanguages.map { Locale(identifier: $0).languageCode }
+            let preferredLanguages = Locale.preferredLanguages.map { Locale(identifier: $0).language.languageCode?.identifier }
             for lang in languages where preferredLanguages.contains(lang.code) {
                 defaultLanguages.append(lang.value ?? lang.code)
             }

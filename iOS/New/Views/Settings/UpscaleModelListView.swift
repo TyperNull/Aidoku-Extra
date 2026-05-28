@@ -97,6 +97,8 @@ struct UpscaleModelListView: View {
             }
         }
         .task {
+            // Ensure premade/bundled models are available offline before reading installed models.
+            await ModelManager.shared.installBundledPremadeModelsIfNeeded()
             enabledModel = ModelManager.shared.getEnabledModelFileName()
             models = await ModelManager.shared.getInstalledModels()
             if let fetchedModels = await ModelManager.shared.getAvailableModels() {

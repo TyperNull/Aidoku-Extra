@@ -520,8 +520,8 @@ extension MangaView.ViewModel {
                                 // add manga updates
                                 for chapter in newChapters
                                 where
-                                    chapterLangFilter != nil ? chapter.lang == chapterLangFilter : true
-                                    && !chapterScanlatorFilter.isEmpty ? chapterScanlatorFilter.contains(chapter.scanlator ?? "") : true
+                                    (chapterLangFilter != nil ? chapter.lang == chapterLangFilter : true)
+                                    && (chapterScanlatorFilter.isEmpty || chapterScanlatorFilter.contains(chapter.scanlator ?? ""))
                                 {
                                     CoreDataManager.shared.createMangaUpdate(
                                         sourceId: sourceKey,

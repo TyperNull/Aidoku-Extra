@@ -144,7 +144,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 "Library.refreshMetadata": false,
                 "Library.notifyNewChapters": false,
 
-                "Browse.languages": ["multi"] + Locale.preferredLanguages.map { Locale(identifier: $0).languageCode },
+                "Browse.languages": ["multi"] + Locale.preferredLanguages.compactMap { Locale(identifier: $0).language.languageCode?.identifier },
                 "Browse.contentRatings": ["safe", "containsNsfw"],
                 "Browse.updateCount": 0,
 
@@ -225,6 +225,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
+        CloudflareCookieStore.restorePersistedCookies()
+
         DataLoader.sharedUrlCache.diskCapacity = 0
 
         let pipeline = ImagePipeline(delegate: self) {
@@ -247,6 +249,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         ImagePipeline.shared = pipeline
 
         performMigration()
+
+        // Ensure bundled upscaling models exist in Documents so the reader model picker works.
+        Task.detached {
+            await ModelManager.shared.installBundledPremadeModelsIfNeeded()
+        }
         handleChaptersToBeDeleted()
 
         networkObserverId = Reachability.registerConnectionTypeObserver { connectionType in

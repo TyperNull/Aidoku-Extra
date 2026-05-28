@@ -17,7 +17,6 @@ struct HistoryView: View {
     @State private var entryToDelete: HistoryEntry?
     @State private var showClearHistoryConfirm = false
     @State private var showDeleteConfirm = false
-    @State private var selectedTab = 0
 
     @State private var triggerLoadMoreVisibleCheck = false
     @State private var loadTask: Task<(), Never>?
@@ -29,59 +28,28 @@ struct HistoryView: View {
     @EnvironmentObject private var path: NavigationCoordinator
 
     var body: some View {
-        Group {
-            if selectedTab == 0 {
-                readHistoryView
-            } else {
-                NotificationHistoryView()
-            }
-        }
-        .navigationTitle(selectedTab == 0 ? NSLocalizedString("READ_HISTORY") : NSLocalizedString("NOTIFICATION_HISTORY"))
+        readHistoryView
+            .navigationTitle(NSLocalizedString("HISTORY"))
         .navigationBarTitleDisplayMode(.automatic)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Menu {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if UserDefaults.standard.bool(forKey: "History.lockHistoryTab") {
                     Button {
-                        selectedTab = 0
+                        if locked {
+                            Task {
+                                await unlock()
+                            }
+                        } else {
+                            locked = true
+                        }
                     } label: {
-                        Label(NSLocalizedString("READ_HISTORY"), systemImage: selectedTab == 0 ? "checkmark" : "")
-                    }
-                    Button {
-                        selectedTab = 1
-                    } label: {
-                        Label(NSLocalizedString("NOTIFICATION_HISTORY"), systemImage: selectedTab == 1 ? "checkmark" : "")
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(selectedTab == 0 ? NSLocalizedString("READ_HISTORY") : NSLocalizedString("NOTIFICATION_HISTORY"))
-                            .font(.headline)
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        Image(systemName: locked ? "lock" : "lock.open")
                     }
                 }
-            }
-            
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                if selectedTab == 0 {
-                    if UserDefaults.standard.bool(forKey: "History.lockHistoryTab") {
-                        Button {
-                            if locked {
-                                Task {
-                                    await unlock()
-                                }
-                            } else {
-                                locked = true
-                            }
-                        } label: {
-                            Image(systemName: locked ? "lock" : "lock.open")
-                        }
-                    }
-                    Button {
-                        showClearHistoryConfirm = true
-                    } label: {
-                        Image(systemName: "trash")
-                    }
+                Button {
+                    showClearHistoryConfirm = true
+                } label: {
+                    Image(systemName: "trash")
                 }
             }
         }

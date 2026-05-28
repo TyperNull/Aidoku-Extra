@@ -27,7 +27,19 @@ actor DownloadQueue {
     private var bgTask: ProgressReporting?
     private var sendCancelNotification = true
 
-    private static let taskIdentifier = (Bundle.main.bundleIdentifier ?? "") + ".download"
+    private static let taskIdentifier = {
+        if let configuredIdentifier = Bundle.main.object(forInfoDictionaryKey: "DownloadTaskIdentifier") as? String,
+           !configuredIdentifier.isEmpty {
+            return configuredIdentifier
+        }
+        return (Bundle.main.bundleIdentifier ?? "") + ".download"
+    }()
+    private static var canUseContinuedProcessingTask: Bool {
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier, !bundleIdentifier.isEmpty else {
+            return false
+        }
+        return taskIdentifier.hasPrefix("\(bundleIdentifier).")
+    }
 
     init(cache: DownloadCache, onCompletion: (() -> Void)? = nil) {
         self.cache = cache
@@ -48,7 +60,8 @@ actor DownloadQueue {
             bgTask == nil,
             #available(iOS 26.0, *),
             UserDefaults.standard.bool(forKey: "Downloads.background"),
-            !ProcessInfo.processInfo.isMacCatalystApp
+            !ProcessInfo.processInfo.isMacCatalystApp,
+            Self.canUseContinuedProcessingTask
         {
             await register()
 

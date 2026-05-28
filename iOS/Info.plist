@@ -10,6 +10,12 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).backup</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).libraryRefresh</string>
 	</array>
+	<key>BackupTaskIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).backup</string>
+	<key>DownloadTaskIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).download</string>
+	<key>LibraryRefreshTaskIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).libraryRefresh</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

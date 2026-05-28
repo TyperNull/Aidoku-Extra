@@ -651,6 +651,19 @@ extension Settings {
             ]))
         ),
         .init(
+            title: NSLocalizedString("NETWORK"),
+            value: .group(.init(
+                footer: NSLocalizedString("CUSTOM_USER_AGENT_TEXT"),
+                items: [
+                    .init(
+                        key: "General.customUserAgent",
+                        title: NSLocalizedString("CUSTOM_USER_AGENT"),
+                        value: .custom
+                    )
+                ]
+            ))
+        ),
+        .init(
             title: NSLocalizedString("ADVANCED"),
             value: .group(.init(items: [
                 .init(

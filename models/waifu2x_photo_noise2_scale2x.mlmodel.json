@@ -1,0 +1,17 @@
+{
+    "name": "waifu2x (photo, 2x, noise2)",
+    "info": "A lightweight image 2x upscale and denoise model.",
+    "tags": [
+        "2x",
+        "noise2",
+        "fast"
+    ],
+    "type": "multiarray",
+    "config": {
+        "inputName": "input",
+        "outputName": "output",
+        "blockSize": 156,
+        "shrinkSize": 7
+    },
+    "file": "waifu2x_photo_noise2_scale2x.mlmodel"
+}

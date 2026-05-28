@@ -33,7 +33,7 @@ class LibraryViewController: OldMangaCollectionViewController {
     private lazy var mangaUpdatesButton = makeBarButton(
         systemName: "bell",
         action: #selector(openMangaUpdates),
-        titleKey: "MANGA_UPDATES",
+        titleKey: "NOTIFICATION_HISTORY",
         sharesBackground: false
     )
 
@@ -687,10 +687,9 @@ extension LibraryViewController {
     }
 
     @objc func openMangaUpdates() {
-        let path = NavigationCoordinator(rootViewController: self)
-        let viewController = UIHostingController(rootView: MangaUpdatesView().environmentObject(path))
+        let viewController = UIHostingController(rootView: NotificationHistoryView())
         viewController.navigationItem.largeTitleDisplayMode = .never
-        viewController.navigationItem.title = NSLocalizedString("MANGA_UPDATES")
+        viewController.navigationItem.title = NSLocalizedString("NOTIFICATION_HISTORY")
         navigationController?.pushViewController(viewController, animated: true)
     }
 

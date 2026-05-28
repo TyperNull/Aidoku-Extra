@@ -341,6 +341,8 @@ extension SettingsView {
                 return setting
             }()
             SettingView(setting: newSetting)
+        } else if setting.key == "General.customUserAgent" {
+            UserAgentSettingView()
         }
     }
 }
@@ -369,6 +371,7 @@ extension SettingsView {
     func clearNetworkCache() {
         URLCache.shared.removeAllCachedResponses()
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        CloudflareCookieStore.clearPersistedCookies()
         WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
             for record in records {
                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})

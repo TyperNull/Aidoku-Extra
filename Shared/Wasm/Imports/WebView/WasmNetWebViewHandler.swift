@@ -16,7 +16,6 @@ class WasmNetWebViewHandler: NSObject, WKNavigationDelegate, PopupWebViewHandler
         let webView = WKWebView(frame: .zero)
         webView.navigationDelegate = self
         webView.customUserAgent = request.value(forHTTPHeaderField: "User-Agent")
-        webView.load(request)
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
@@ -59,8 +58,13 @@ class WasmNetWebViewHandler: NSObject, WKNavigationDelegate, PopupWebViewHandler
             webView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
 
-        // timeout after 12s if bypass doesn't work
-        perform(#selector(timeout), with: nil, afterDelay: 12)
+        Task { @MainActor in
+            if let url = self.request.url {
+                await CloudflareCookieStore.injectCookies(into: self.webView, for: url)
+            }
+            self.webView.load(self.request)
+            self.perform(#selector(self.timeout), with: nil, afterDelay: 12)
+        }
     }
 
     func openWebViewPopup() {
@@ -105,28 +109,19 @@ class WasmNetWebViewHandler: NSObject, WKNavigationDelegate, PopupWebViewHandler
         WKWebsiteDataStore.default().httpCookieStore.getAllCookies { webViewCookies in
             guard let url = self.request.url else { return }
 
-            // check for old (expired) clearance cookie
-            let oldCookie = HTTPCookieStorage.shared.cookies(for: url)?.first { $0.name == "cf_clearance" }
-
             // delay captcha check by 3s (so it loads in)
 #if !os(macOS)
-            if self.popup == nil {
+            if self.popup == nil, !CloudflareCookieStore.hasValidClearance(for: url) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     self.checkForCaptcha()
                 }
-                // try again in 5s if the first check didn't catch the captcha (dumb hack)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                     self.checkForCaptcha()
                 }
             }
 #endif
 
-            // check for clearance cookie
-            guard webViewCookies.contains(where: {
-                $0.name == "cf_clearance" &&
-                $0.value != oldCookie?.value ?? "" &&
-                ($0.domain.contains(url.host ?? "") || (url.host?.contains($0.domain) ?? false))
-            }) else {
+            guard CloudflareCookieStore.foundClearance(in: webViewCookies, for: url) != nil else {
                 return
             }
 
@@ -136,11 +131,7 @@ class WasmNetWebViewHandler: NSObject, WKNavigationDelegate, PopupWebViewHandler
             self.popup?.dismiss(animated: true)
 #endif
 
-            // remove old cookie and save new cookies for future requests
-            if let oldCookie {
-                HTTPCookieStorage.shared.deleteCookie(oldCookie)
-            }
-            HTTPCookieStorage.shared.setCookies(webViewCookies, for: url, mainDocumentURL: url)
+            CloudflareCookieStore.saveCookies(from: webViewCookies, for: url)
             if let cookies = HTTPCookie.requestHeaderFields(with: webViewCookies)["Cookie"] {
                 self.request.addValue(cookies, forHTTPHeaderField: "Cookie")
             }
@@ -165,6 +156,9 @@ class WasmNetWebViewHandler: NSObject, WKNavigationDelegate, PopupWebViewHandler
     @MainActor
     func checkForCaptcha() {
         guard !done, !popupShown else { return }
+        if let url = request.url, CloudflareCookieStore.hasValidClearance(for: url) {
+            return
+        }
         // check if captcha or verify button is shown
         webView.evaluateJavaScript("""
         document.querySelector('input[name="cf-turnstile-response"]') !== null

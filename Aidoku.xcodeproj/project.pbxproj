@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		01E15B0E854E44D096C11A68 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F47A0E9E7294F2B8AF34CF6 /* NotificationManager.swift */; };
 		A9F2C3D7B4E84A1F9D6E5B82 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F47A0E9E7294F2B8AF34CF6 /* NotificationManager.swift */; };
+		B1C2D3E4F5A6478990ABCDEF /* NotificationTestManga.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6478990ABCDEF0 /* NotificationTestManga.swift */; };
+		C2D3E4F5A6B7489901BCDEF1 /* NotificationTestManga.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6478990ABCDEF0 /* NotificationTestManga.swift */; };
 		8111160DCDE24D27A9FD55DC /* LibraryDuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532932ADFD7B4F82B06DA0E6 /* LibraryDuplicatesView.swift */; };
 		7EE9AC6E47EF46A29E9F545E /* TachiyomiBackup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */; };
 		304C0E007B534D77ADF523E8 /* TachiyomiBackup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */; };
@@ -73,6 +75,7 @@
 		FB077DAA2E7DC77300C9C214 /* SettingsAboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB077DA92E7DC76F00C9C214 /* SettingsAboutView.swift */; };
 		FB077DAC2E7DC83100C9C214 /* SettingsTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB077DAB2E7DC82E00C9C214 /* SettingsTrackingView.swift */; };
 		4E1138067D32450A99781696 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4253061DEC49463EA577AE86 /* NotificationsView.swift */; };
+		FBUA00012F0A1B2C003D4E5F /* UserAgentSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBUA00002F0A1B2C003D4E5F /* UserAgentSettingView.swift */; };
 		FB077DAE2E7DC85A00C9C214 /* BackupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB077DAD2E7DC85800C9C214 /* BackupsView.swift */; };
 		FB077DB02E7DCFFA00C9C214 /* String+Highlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB077DAF2E7DCFF700C9C214 /* String+Highlight.swift */; };
 		FB0AB8942F50B98300AF1451 /* BackupCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0AB8932F50B98000AF1451 /* BackupCategory.swift */; };
@@ -389,6 +392,8 @@
 		FB792F762DC90C84001EC616 /* UserDefaultsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB792F752DC90C84001EC616 /* UserDefaultsObserver.swift */; };
 		FB79839E2DFF773A0044BC71 /* CloudflareHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB79839D2DFF77360044BC71 /* CloudflareHandler.swift */; };
 		FB79839F2DFF773A0044BC71 /* CloudflareHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB79839D2DFF77360044BC71 /* CloudflareHandler.swift */; };
+		FBCFCOOK2E0A1B2C003D4E5F /* CloudflareCookieStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBCFCOOK1E0A1B2C003D4E5F /* CloudflareCookieStore.swift */; };
+		FBCFCOOK3E0A1B2C003D4E5F /* CloudflareCookieStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBCFCOOK1E0A1B2C003D4E5F /* CloudflareCookieStore.swift */; };
 		FB7983A12E0074B90044BC71 /* PopupWebViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB7983A02E0074B80044BC71 /* PopupWebViewHandler.swift */; };
 		FB7983A22E0074B90044BC71 /* PopupWebViewHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB7983A02E0074B80044BC71 /* PopupWebViewHandler.swift */; };
 		FB7983F92E0C663B000761A9 /* MultiArrayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB7983F82E0C6639000761A9 /* MultiArrayModel.swift */; };
@@ -612,6 +617,7 @@
 
 /* Begin PBXFileReference section */
 		5F47A0E9E7294F2B8AF34CF6 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6478990ABCDEF0 /* NotificationTestManga.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTestManga.swift; sourceTree = "<group>"; };
 		532932ADFD7B4F82B06DA0E6 /* LibraryDuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryDuplicatesView.swift; sourceTree = "<group>"; };
 		8B91452F75F2420F87C2D5D1 /* TachiyomiBackup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TachiyomiBackup.pb.swift; sourceTree = "<group>"; };
 		1E761FBFCE2042DE936A736C /* TachiyomiConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TachiyomiConverter.swift; sourceTree = "<group>"; };
@@ -667,6 +673,7 @@
 		FB077DA92E7DC76F00C9C214 /* SettingsAboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAboutView.swift; sourceTree = "<group>"; };
 		FB077DAB2E7DC82E00C9C214 /* SettingsTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTrackingView.swift; sourceTree = "<group>"; };
 		4253061DEC49463EA577AE86 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		FBUA00002F0A1B2C003D4E5F /* UserAgentSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgentSettingView.swift; sourceTree = "<group>"; };
 		FB077DAD2E7DC85800C9C214 /* BackupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsView.swift; sourceTree = "<group>"; };
 		FB077DAF2E7DCFF700C9C214 /* String+Highlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Highlight.swift"; sourceTree = "<group>"; };
 		FB0AB8922F50B81800AF1451 /* 0.8.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = 0.8.2.xcdatamodel; sourceTree = "<group>"; };
@@ -912,6 +919,7 @@
 		FB7864852848215500125DC0 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		FB792F752DC90C84001EC616 /* UserDefaultsObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsObserver.swift; sourceTree = "<group>"; };
 		FB79839D2DFF77360044BC71 /* CloudflareHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudflareHandler.swift; sourceTree = "<group>"; };
+		FBCFCOOK1E0A1B2C003D4E5F /* CloudflareCookieStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudflareCookieStore.swift; sourceTree = "<group>"; };
 		FB7983A02E0074B80044BC71 /* PopupWebViewHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupWebViewHandler.swift; sourceTree = "<group>"; };
 		FB7983F82E0C6639000761A9 /* MultiArrayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiArrayModel.swift; sourceTree = "<group>"; };
 		FB7984102E0C805D000761A9 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
@@ -1292,6 +1300,7 @@
 				FB30D581296CC0FE006B03A7 /* HistoryManager.swift */,
 				4875B8242BA6F2C3001E39CA /* MangaUpdateManager.swift */,
 				5F47A0E9E7294F2B8AF34CF6 /* NotificationManager.swift */,
+				A1B2C3D4E5F6478990ABCDEF0 /* NotificationTestManga.swift */,
 			);
 			path = Manga;
 			sourceTree = "<group>";
@@ -1337,6 +1346,7 @@
 				66C7E95A2ED77BB50026FD6C /* ImageProcessingSettingsKey.swift */,
 				FBF8C5832DCD01E10066F53D /* BlockingTask.swift */,
 				FB79839D2DFF77360044BC71 /* CloudflareHandler.swift */,
+				FBCFCOOK1E0A1B2C003D4E5F /* CloudflareCookieStore.swift */,
 				FB82A5C82DF8786B00366BC8 /* ObjectActorSerialExecutor.swift */,
 				FBF8C5852DCD02020066F53D /* PageInterceptorProcessor.swift */,
 				FB662F072DA81B8200007514 /* DownsampleProcessor.swift */,
@@ -1997,6 +2007,7 @@
 				FB077DA92E7DC76F00C9C214 /* SettingsAboutView.swift */,
 				FB077DAB2E7DC82E00C9C214 /* SettingsTrackingView.swift */,
 				4253061DEC49463EA577AE86 /* NotificationsView.swift */,
+				FBUA00002F0A1B2C003D4E5F /* UserAgentSettingView.swift */,
 				FB55C0AE2DF1E2650019A551 /* SourceListsView.swift */,
 				FB7984132E0C9F1D000761A9 /* UpscaleModelListView.swift */,
 				FB5E5D002E32BFC300843E27 /* TapZonesSelectView.swift */,
@@ -2581,7 +2592,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n# Copy bundled upscaling models into the app bundle (for offline use)\nMODELS_SRC=\"${SRCROOT}/models\"\nMODELS_DEST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Models\"\nif [ -d \"$MODELS_SRC\" ]; then\n  mkdir -p \"$MODELS_DEST\"\n  for item in \"$MODELS_SRC\"/*; do\n    base=\"$(basename \"$item\")\"\n    case \"$base\" in\n      *.mlmodel|*.mlmodel.json|*.mlpackage|*.mlpackage.json)\n        cp -R \"$item\" \"$MODELS_DEST/$base\" 2>/dev/null || true\n      ;;\n    esac\ndone\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2772,6 +2783,7 @@ FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FBE3E4922DD163DD00EF8145 /* BetterBorderedButtonStyle.swift in Sources */,
 				FBF059B92EF7014D00907B0E /* HeatmapData.swift in Sources */,
 				FB79839F2DFF773A0044BC71 /* CloudflareHandler.swift in Sources */,
+				FBCFCOOK3E0A1B2C003D4E5F /* CloudflareCookieStore.swift in Sources */,
 				FBE53F0629CB723D00899601 /* ReaderWebtoonTransitionNode.swift in Sources */,
 				FB4EEBB927A2F0FC005081A3 /* MangaObject.swift in Sources */,
 				FB0CAA5028A55BB80024561A /* CoreDataManager+Category.swift in Sources */,
@@ -2922,6 +2934,7 @@ FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FBE53F1229CDDCD300899601 /* BaseObservingCellNode.swift in Sources */,
 				FB077DAC2E7DC83100C9C214 /* SettingsTrackingView.swift in Sources */,
 				4E1138067D32450A99781696 /* NotificationsView.swift in Sources */,
+				FBUA00012F0A1B2C003D4E5F /* UserAgentSettingView.swift in Sources */,
 				FB2E02502868A51C00786F21 /* TrackerModalViewController.swift in Sources */,
 				FB716E0B283FF85400F1BB5D /* UIView.swift in Sources */,
 				FBE78129282F481A0038C0E3 /* DownloadCache.swift in Sources */,
@@ -2966,6 +2979,7 @@ FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FB63D5022E38124E004FF4DC /* EditedKeys.swift in Sources */,
 				FB0CAA6528A9B5440024561A /* MangaManager.swift in Sources */,
 				01E15B0E854E44D096C11A68 /* NotificationManager.swift in Sources */,
+				B1C2D3E4F5A6478990ABCDEF /* NotificationTestManga.swift in Sources */,
 				FB1B4866277CE76B0056D02C /* Chapter.swift in Sources */,
 				FB7984112E0C8068000761A9 /* ModelManager.swift in Sources */,
 				FBA36E712F55D3D700597190 /* SavedSearch.swift in Sources */,
@@ -3036,6 +3050,7 @@ FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FB94E3152DF9DE9E00784556 /* SourceList.swift in Sources */,
 				FB034E9A2EAAFA850072EEEB /* KavitaApi.swift in Sources */,
 				FB79839E2DFF773A0044BC71 /* CloudflareHandler.swift in Sources */,
+				FBCFCOOK2E0A1B2C003D4E5F /* CloudflareCookieStore.swift in Sources */,
 				FB6340B72791DA130072A2A2 /* KVCObject.swift in Sources */,
 				FB4275172960D6AA00131377 /* SourceInfo.swift in Sources */,
 				FB4B0AF2285D46BF0066A13B /* Date.swift in Sources */,
@@ -3060,6 +3075,7 @@ FB4B0AEE285D2EE30066A13B /* MyAnimeListModels.swift in Sources */,
 				FB14B12F2DF4D2E90067E4D4 /* AniListQueries.swift in Sources */,
 				FB0CAA6628A9B5540024561A /* MangaManager.swift in Sources */,
 				A9F2C3D7B4E84A1F9D6E5B82 /* NotificationManager.swift in Sources */,
+				C2D3E4F5A6B7489901BCDEF1 /* NotificationTestManga.swift in Sources */,
 				723D3AF92E0DC5A5003ED4CF /* DownloadedMangaInfo.swift in Sources */,
 				FB72501727CAACAB0037F1C9 /* BackupManga.swift in Sources */,
 				FB0CAA5B28A998630024561A /* CoreDataManager.swift in Sources */,

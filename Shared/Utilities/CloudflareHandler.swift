@@ -57,12 +57,18 @@ actor CloudflareHandler: NSObject {
 #endif
 
     func handle(request: URLRequest) async {
+        shouldTimeout = true
+
         // wait until previous request finishes
         while finishContinuation != nil {
             try? await Task.sleep(nanoseconds: 100_000_000)
         }
 
         guard await addWebView(for: request) else { return }
+
+        if let url = request.url {
+            await CloudflareCookieStore.injectCookies(into: webView, for: url)
+        }
 
         _ = await webView.load(request)
 
@@ -164,6 +170,9 @@ actor CloudflareHandler: NSObject {
     @MainActor
     private func checkForCaptcha(for request: URLRequest) {
         guard !popupShown else { return }
+        if let url = request.url, CloudflareCookieStore.hasValidClearance(for: url) {
+            return
+        }
         let js = """
         (document.querySelector('input[name="cf-turnstile-response"]') !== null
             || document.body.textContent.includes('Verify you are human by completing')) ? 1 : 0
@@ -228,27 +237,14 @@ extension CloudflareHandler {
         }
 #endif
 
-        // check for old (expired) clearance cookie
-        let oldCookie = HTTPCookieStorage.shared.cookies(for: url)?.first { $0.name == "cf_clearance" }
-
-        // check for clearance cookie
-        let hasClearance = webViewCookies.contains(where: {
-            $0.name == "cf_clearance" &&
-            $0.value != oldCookie?.value ?? "" &&
-            ($0.domain.contains(url.host ?? "") || (url.host?.contains($0.domain) ?? false))
-        })
-        guard hasClearance else { return }
+        guard CloudflareCookieStore.foundClearance(in: webViewCookies, for: url) != nil else { return }
 
         await webView.removeFromSuperview()
 #if !os(macOS)
         await self.popupController?.dismiss(animated: true)
 #endif
 
-        // remove old cookie and save new cookies for future requests
-        if let oldCookie {
-            HTTPCookieStorage.shared.deleteCookie(oldCookie)
-        }
-        HTTPCookieStorage.shared.setCookies(webViewCookies, for: url, mainDocumentURL: url)
+        CloudflareCookieStore.saveCookies(from: webViewCookies, for: url)
 
         await self.finish()
     }

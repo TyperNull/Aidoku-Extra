@@ -204,6 +204,56 @@ extension ModelManager {
         return modelsDir
     }
 
+    /// Copies premade upscaling models bundled in the app into `Documents/Models`.
+    /// This lets the existing model picker work with offline/bundled models too.
+    func installBundledPremadeModelsIfNeeded() async {
+        guard let bundleModelsDir = Bundle.main.resourceURL?
+            .appendingPathComponent("Models", isDirectory: true)
+        else {
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: bundleModelsDir.path) else {
+            return
+        }
+
+        let fm = FileManager.default
+        let destModelsDir: URL
+        do {
+            destModelsDir = try modelsDirectory()
+        } catch {
+            return
+        }
+
+        let bundleItems: [URL]
+        do {
+            bundleItems = try fm.contentsOfDirectory(
+                at: bundleModelsDir,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles]
+            )
+        } catch {
+            return
+        }
+
+        for itemURL in bundleItems {
+            let name = itemURL.lastPathComponent
+            let supported =
+                name.hasSuffix(".mlmodel") ||
+                name.hasSuffix(".mlmodel.json") ||
+                name.hasSuffix(".mlpackage") ||
+                name.hasSuffix(".mlpackage.json")
+            guard supported else { continue }
+
+            let destURL = destModelsDir.appendingPathComponent(name)
+            if fm.fileExists(atPath: destURL.path) {
+                continue // don't overwrite user-downloaded models
+            }
+
+            try? fm.copyItem(at: itemURL, to: destURL)
+        }
+    }
+
     // get the list of models from the server
     private func fetchModelList() async throws -> ModelList {
         if let cachedModelList {

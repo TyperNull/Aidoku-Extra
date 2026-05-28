@@ -32,8 +32,8 @@ struct AddSourceFilterMenu: View {
         })
 
         // bring local language to top
-        languageCodes.removeAll { $0 == Locale.current.languageCode || $0 == "multi" || $0 == "All" }
-        if let code = Locale.current.languageCode {
+        languageCodes.removeAll { $0 == Locale.current.language.languageCode?.identifier || $0 == "multi" || $0 == "All" }
+        if let code = Locale.current.language.languageCode?.identifier {
             languageCodes.insert(code, at: 0)
         }
 

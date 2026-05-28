@@ -19,7 +19,7 @@ extension Month: Identifiable {
         let label = monthSymbols[rawValue - 1]
 
         // use full label for cjk
-        if let languageCode = locale.languageCode, ["ja", "zh", "ko"].contains(languageCode) {
+        if let languageCode = locale.language.languageCode?.identifier, ["ja", "zh", "ko"].contains(languageCode) {
             let fullMonthSymbols = formatter.monthSymbols ?? []
             return fullMonthSymbols[rawValue - 1]
         }
@@ -59,7 +59,7 @@ struct YearlyMonthChartView: View {
             // show first letter for each month
             AxisMarks(values: Array(1...12)) { value in
                 let locale = Locale.current
-                let isCJK = ["ja", "zh", "ko"].contains(locale.languageCode ?? "")
+                let isCJK = ["ja", "zh", "ko"].contains(locale.language.languageCode?.identifier ?? "")
                 if
                     let intValue = value.as(Int.self),
                     let month = Month(rawValue: intValue),

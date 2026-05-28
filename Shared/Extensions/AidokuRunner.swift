@@ -106,7 +106,7 @@ extension AidokuRunner.Source {
                 forHTTPHeaderField: "User-Agent"
             )
         }
-        let cookies = HTTPCookie.requestHeaderFields(with: HTTPCookieStorage.shared.cookies(for: url) ?? [])
+        let cookies = HTTPCookie.requestHeaderFields(with: CloudflareCookieStore.cookies(for: url))
         for (key, value) in cookies {
             if key == "Cookie" {
                 var cookieString = value

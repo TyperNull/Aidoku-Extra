@@ -24,7 +24,13 @@ actor BackupManager {
         }
     }
 
-    private static let backupTaskIdentifier = (Bundle.main.bundleIdentifier ?? "") + ".backup"
+    private static let backupTaskIdentifier = {
+        if let configuredIdentifier = Bundle.main.object(forInfoDictionaryKey: "BackupTaskIdentifier") as? String,
+           !configuredIdentifier.isEmpty {
+            return configuredIdentifier
+        }
+        return (Bundle.main.bundleIdentifier ?? "") + ".backup"
+    }()
     private static let maxAutoBackups = 4
 
     private static let excludedSettings = [

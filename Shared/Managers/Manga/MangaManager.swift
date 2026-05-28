@@ -17,7 +17,19 @@ import UIKit
 actor MangaManager {
     static let shared = MangaManager()
 
-    private static let taskIdentifier = (Bundle.main.bundleIdentifier ?? "") + ".libraryRefresh"
+    private static let taskIdentifier = {
+        if let configuredIdentifier = Bundle.main.object(forInfoDictionaryKey: "LibraryRefreshTaskIdentifier") as? String,
+           !configuredIdentifier.isEmpty {
+            return configuredIdentifier
+        }
+        return (Bundle.main.bundleIdentifier ?? "") + ".libraryRefresh"
+    }()
+    private static var canUseContinuedProcessingTask: Bool {
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier, !bundleIdentifier.isEmpty else {
+            return false
+        }
+        return taskIdentifier.hasPrefix("\(bundleIdentifier).")
+    }
 
     private var libraryRefreshTask: Task<(), Never>?
     private var libraryRefreshProgressTask: Task<(), Never>?
@@ -328,7 +340,11 @@ extension MangaManager {
         self.skipReachabilityCheck = skipReachabilityCheck
 
 #if !os(macOS) && !targetEnvironment(simulator)
-        if #available(iOS 26.0, *), UserDefaults.standard.bool(forKey: "Library.backgroundRefresh"), !ProcessInfo.processInfo.isMacCatalystApp {
+        if #available(iOS 26.0, *),
+           UserDefaults.standard.bool(forKey: "Library.backgroundRefresh"),
+           !ProcessInfo.processInfo.isMacCatalystApp,
+           Self.canUseContinuedProcessingTask
+        {
             let request = BGContinuedProcessingTaskRequest(
                 identifier: Self.taskIdentifier,
                 title: NSLocalizedString("REFRESHING_LIBRARY"),
@@ -409,6 +425,20 @@ extension MangaManager {
         excludedCategories: [String] = [],
         context: NSManagedObjectContext? = nil
     ) -> Bool {
+        // always refresh manga with per-title notifications enabled
+        if NotificationManager.shared.isNotificationEnabled(sourceId: manga.sourceId, mangaId: manga.id) {
+            if manga.updateStrategy == .never {
+                return true
+            }
+            if NotificationTestManga.isTestManga(sourceId: manga.sourceId, mangaId: manga.id) {
+                return true // handled separately in doLibraryRefresh
+            }
+            if SourceManager.shared.source(for: manga.sourceId) == nil {
+                return true
+            }
+            return false
+        }
+
         // update strategy is never
         if manga.updateStrategy == .never {
             return true
@@ -521,7 +551,7 @@ extension MangaManager {
         let total = filteredManga.count
         var completed = 0
         
-        let notificationsEnabled = await NotificationManager.shared.isGloballyEnabled()
+        let notificationsEnabled = NotificationManager.shared.isGloballyEnabled()
         var pendingNotifications: [(sourceId: String, mangaId: String, title: String, chapterCount: Int, chapters: [AidokuRunner.Chapter], coverUrl: String?)] = []
 
         let newDetails = await {
@@ -578,8 +608,8 @@ extension MangaManager {
                         let scanlatorFilter = mangaObject.scanlatorFilter ?? []
                         for chapter in newChapters
                         where
-                            mangaObject.langFilter != nil ? chapter.lang == mangaObject.langFilter : true
-                            && !scanlatorFilter.isEmpty ? scanlatorFilter.contains(chapter.scanlator ?? "") : true
+                            (mangaObject.langFilter != nil ? chapter.lang == mangaObject.langFilter : true)
+                            && (scanlatorFilter.isEmpty || scanlatorFilter.contains(chapter.scanlator ?? ""))
                         {
                             CoreDataManager.shared.createMangaUpdate(
                                 sourceId: manga.sourceId,
@@ -625,7 +655,11 @@ extension MangaManager {
 
             return results
         }()
-        
+
+        if notificationsEnabled, let testSummary = await NotificationTestManga.processLibraryRefresh() {
+            pendingNotifications.append(testSummary)
+        }
+
         if notificationsEnabled, !pendingNotifications.isEmpty {
             await NotificationManager.shared.notifyNewChapters(summaries: pendingNotifications)
         }
