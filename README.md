@@ -25,6 +25,12 @@ DO NOT REPORT BUGS FROM THIS FORK TO THE MAIN AIDOKU REPO.
 
 - History changes: better notification history and managment
 
+- livecontainer fixes notifications should work when manual refresh is triggered.
+
+- pre-loaded with upscale models.
+
+- UA ( Custom user agents ) and some ready to use UA or add your own. some source will check the webview for UA so this should help with the stupid cloudflare shit. to change it Settings-> Advanced.
+
 # Contributing
 
 No lol.
